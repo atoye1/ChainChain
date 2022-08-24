@@ -9,13 +9,16 @@ let loggedIn = false;
 function checkLogin() {
     if (loggedIn) {
         $("#loginMenu").addClass("d-none");
+        $("#signupMenu").addClass("d-none");
         $("#logoutMenu").removeClass("d-none");
     } else {
         $("#loginMenu").removeClass("d-none");
+        $("#signupMenu").removeClass("d-none");
         $("#logoutMenu").addClass("d-none");
     }
     // TODO:localStorage cookie or session 활용해서 받아오는 형식으로 변경한다.
 }
+checkLogin();
 
 // Dynamically loads modelName according to company-name
 $("#companyName").change(() => {
@@ -30,10 +33,6 @@ $("#companyName").change(() => {
 });
 
 // Event Listeners using jquery Syntax
-
-// show loading wheel when ajaxing
-
-
 $("#registerBtn").click(async () => {
     const ownerId = $("#ownerId").val();
     const bicycleId = $("#bicycleId").val();
@@ -73,6 +72,18 @@ $("#queryBtn").click(() => {
     });
 });
 
+$("#queryBtn").click(() => {
+    const bicycleIdQuery = $("#bicycleIdQuery").val();
+    let getData = {
+        bicycleIdQuery: bicycleIdQuery
+    };
+    console.log(bicycleIdQuery);
+    $.get(apiStubAddr, getData, (data, status) => {
+        console.log(status);
+        console.log(data);
+    });
+});
+
 $("#queryMineBtn").click(() => {
     let getData = {};
     $.get(apiStubAddr, getData, (data, status) => {
@@ -81,15 +92,32 @@ $("#queryMineBtn").click(() => {
     });
 });
 
-loginBtn.click(() => {
-
+$("#loginBtn").click(async () => {
+    const loginId = $("#loginId").val();
+    const loginPw = $("#loginPw").val();
+    let postData = {
+        loginId: loginId,
+        loginPw: loginPw
+    };
+    await $.post(apiStubAddr, postData, (data, status) => {
+        console.log(status);
+        console.log(data);
+    });
+    console.log("login btn triggered");
+    checkLogin();
 });
 
 signupBtn.click(() => {
 
 });
 
+$("#logoutMenu").click(() => {
+    loggedIn = false;
+    checkLogin();
+});
 
+
+// show loading wheel when ajaxing
 $(document).on({
     ajaxStart: function () {
         console.log("ajaxStart");
@@ -101,8 +129,8 @@ $(document).on({
     }
 });;;
 
-
-
-
-//
-checkLogin();
+// Event Listeners for debugging
+$("#changeLoginStatus").click(() => {
+    loggedIn = loggedIn ? false : true;
+    checkLogin();
+});
