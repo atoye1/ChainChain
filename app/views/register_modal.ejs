@@ -1,0 +1,55 @@
+<div class="modal fade" id="registerModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">자전거 등록</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="ownerId" class="col-form-label">소유자</label>
+            <input type="text" class="form-control" id="ownerId">
+          </div>
+          <div class="mb-3">
+            <label for="bycycleId" class="col-form-label">차대번호</label>
+            <input type="text" class="form-control" id="bicycleId">
+          </div>
+          <div class="mb-3">
+            <label for="companyName" class="col-form-label">제조사</label>
+            <select class="form-select" aria-label="company-select" id="companyName">
+              <option selected>제조사를 선택하세요</option>
+              <option value="Giant">Giant</option>
+              <option value="Merida">Merida</option>
+              <option value="Cello">Cello</option>
+              <option value="Bianchi">Bianchi</option>
+              <option value="Brompton">Brompton</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="modelName" class="col-form-label">모델명</label>
+            <select class="form-select" aria-label="company-select" id="modelName">
+              <option selected>모델명을 선택하세요</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="colour" class="col-form-label">색상</label>
+            <input type="text" class="form-control" id="colour">
+          </div>
+          <div class="mb-3">
+            <label for="bicycleImg" class="col-form-label">사진</label>
+            <input id="bicycleImg" class="form-control" type="file" onchange="readURL(this);" class="form-control border-0">
+          </div>
+          <div class="mb-3">
+            <label for="textComment" class="col-form-label">기타 정보(100자 이내)</label>
+            <textarea class="form-control" id="textComment"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="registerBtn" type="button" class="btn btn-primary">자전거 등록</button>
+      </div>
+    </div>
+  </div>
+</div>

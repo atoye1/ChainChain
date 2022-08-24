@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <%- include("./bootstrapAndJquery.ejs") %>
+  <title>ChainChain</title>
+</head>
+
+<body class="d-flex flex-column h-100 bg-warning py-5">
+  <%- include("./navbar.ejs") %>
+  <div class="my-5 content">
+    <%- include("./debug.ejs") %>
+  </div>
+  <section>
+    <main class="w-md-70 h-100 m-3 p-3 m-md-5 p-md-5 text-center">
+      <h1 style=font-size:3rem>ChainChain 자전거 관리 플랫폼 블라블라</h1>
+      <br>
+      <p class="lead">여기에 서비스를 간단하게 소개하는 문구를 넣습니다. 디자인은 힘드렁.</p>
+      <p class="lead">너무 멋지게 하려고 오버하지말고 최소한의 기능만 완성시켜서 프론트를 만들자</p>
+      <p class="lead">백엔드와 체인코드에 집중해서 구현할래요 </p>
+      <br>
+      <p class="lead">
+        <a href="#" class="btn btn-lg btn-secondary fw-bold border-white bg-primary">Get Yourself Chained With US</a>
+      </p>
+    </main>
+  </section>
+  <div class="modals">
+    <%- include("./register_modal.ejs") %>
+    <%- include("./query_modal.ejs") %>
+    <%- include("./login_modal.ejs") %>
+    <%- include("./signup_modal.ejs") %>
+  </div>
+  <!-- <div id="loader" class="loader d-flex justify-content-center align-items-center"> -->
+  <!-- Place at bottom of page -->
+  <!-- </div> -->
+  <script src="../scripts/script.js"></script>
+</body>
+
+</html>
