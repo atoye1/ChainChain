@@ -39,6 +39,7 @@ app.use('/static', serveIndex(__dirname + '/'));
 
 // main page routing -done
 app.get('/', (req, res) => {
+    console.log("index page called");
     res.render('index', (err, html) => {
         res.end(html);
     });

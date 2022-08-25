@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <%- include("./scripts.ejs") %>
+  <%- include("./linkScripts.ejs") %>
   <title>ChainChain</title>
 </head>
 
 <body class="d-flex flex-column h-100 bg-warning py-5">
   <%- include("./navbar.ejs") %>
-  <div class="my-5 content">
+  <div class="my-5 debug">
     <%- include("./debug.ejs") %>
   </div>
   <section>
@@ -20,22 +20,22 @@
       <br>
       <p class="lead">여기에 서비스를 간단하게 소개하는 문구를 넣습니다. 디자인은 힘드렁.</p>
       <p class="lead">너무 멋지게 하려고 오버하지말고 최소한의 기능만 완성시켜서 프론트를 만들자</p>
-      <p class="lead">백엔드와 체인코드에 집중해서 구현할래요 </p>
+      <p class="lead">백엔드와 체인코드를 더 신경써서 구현해본다</p>
       <br>
       <p class="lead">
         <a href="#" class="btn btn-lg btn-secondary fw-bold border-white bg-primary">Get Yourself Chained With US</a>
       </p>
     </main>
   </section>
+  <!-- <div id="loader" class="loader d-flex justify-content-center align-items-center"> -->
+  <!-- Place at bottom of page -->
+  <!-- </div> -->
   <div class="modals">
     <%- include("./modals/register_modal.ejs") %>
     <%- include("./modals/query_modal.ejs") %>
     <%- include("./modals/login_modal.ejs") %>
     <%- include("./modals/signup_modal.ejs") %>
   </div>
-  <!-- <div id="loader" class="loader d-flex justify-content-center align-items-center"> -->
-  <!-- Place at bottom of page -->
-  <!-- </div> -->
   <script src="../scripts/script.js"></script>
 </body>
 
