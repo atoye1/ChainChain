@@ -9,14 +9,15 @@ const port = "6000";
 let serveIndex = require('serve-index');
 
 // Import Fabric Modules
-//const FabricCaServices = require("fabric-ca-client");
-//const { Gateway, Wallets } = require("fabric-network");
-//const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
-//const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
-//const mspOrg1 = 'Org1MSP';
-//const ccp = buildCCPOrg1();
-//const caClient = buildCAClient(FabricCaServices, ccp, 'ca.org1.example.com');
-//const walletPath = path.join(__dirname, 'wallet');
+
+const FabricCaServices = require("fabric-ca-client");
+const { Gateway, Wallets } = require("fabric-network");
+const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
+const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
+const mspOrg1 = 'Org1MSP';
+const ccp = buildCCPOrg1();
+const caClient = buildCAClient(FabricCaServices, ccp, 'ca.org1.example.com');
+const walletPath = path.join(__dirname, 'wallet');
 
 // Fabric settings done
 
@@ -59,9 +60,9 @@ app.get('/user', (req, res) => {
 });
 
 // admin post request - TODO
-app.post('/process/admin', async (req, res) => {
-    const id = req.body.id;
-    const pw = req.body.password;
+app.post('/bicycle', async (req, res) => {
+    console.log("server triggered by client");
+    console.log(req.body.postData);
     console.log(id, pw);
     try {
         const caInfo = ccp.certificateAuthorities["ca.org1.example.com"];

@@ -85,11 +85,8 @@ func (s *SmartContract) Get(ctx contractapi.TransactionContextInterface, bicycle
 }
 
 func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, key string, value string) error {
-	fmt.Printf("Set Chaincode Executed")
-	fmt.Print(key, value)
 	parsedValue := Bicycle{}
 	json.Unmarshal([]byte(value), &parsedValue)
-	fmt.Println(parsedValue)
 
 	asset := Bicycle{
 		Owner:      "fakeUserId",
@@ -102,7 +99,6 @@ func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, key str
 		IsDeserted: parsedValue.IsDeserted,
 	}
 	assetAsBytes, _ := json.Marshal(asset)
-	fmt.Printf("Set Chaincode Exit with code 0")
 	return ctx.GetStub().PutState(key, assetAsBytes)
 }
 

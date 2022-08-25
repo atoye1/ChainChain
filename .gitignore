@@ -117,6 +117,11 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-
-network/crypto-config
-crypto-cnofig/
+vendor
+network_tls/organizations/*
+network_tls/config/*
+network_tls/system-genesis-block/*
+network_tls/channel-artifacts/*
+log.txt
+old_network/organizations
+old_network/crypto-config/

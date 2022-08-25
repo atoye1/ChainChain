@@ -53,7 +53,7 @@ $("#registerBtn").click(async () => {
     console.log(postData);
 
     // TODO : SERVER API CONNECTION
-    await $.post(apiStubAddr, postData, (data, status) => {
+    await $.post('/bicycle', postData, (data, status) => {
         console.log(status);
         console.log(data);
     });
@@ -65,6 +65,7 @@ $("#queryBtn").click(() => {
     let getData = {
         bicycleIdQuery: bicycleIdQuery
     };
+    let registerEndpoint = "/register/bicycle";
     console.log(bicycleIdQuery);
     $.get(apiStubAddr, getData, (data, status) => {
         console.log(status);
@@ -127,7 +128,7 @@ $(document).on({
         console.log("ajaxEnd");
         $("#loading_modal").modal('hide');
     }
-});;;
+});
 
 // Event Listeners for debugging
 $("#changeLoginStatus").click(() => {
