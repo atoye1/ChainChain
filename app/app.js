@@ -116,7 +116,65 @@ app.post('/bicycle', async (req, res) => {
     res.status(200).send(obj);
 });
 
+app.get('/bicycle/history', async (req, res) => {
+    console.log("get /bicycle/history called");
+    const key = req.query.bicycleIdQuery;
+    const gateway = new Gateway();
+    let result;
+    try {
+        const wallet = await buildWallet(Wallets, walletPath);
 
+        await gateway.connect(ccp, {
+            wallet,
+            identity: currentId,
+            discovery: { enabled: true, asLocalhost: true }
+        });
+        const network = await gateway.getNetwork("mychannel");
+        const contract = network.getContract("bicycleCC");
+        result = await contract.evaluateTransaction('History', key);
+    } catch (error) {
+        result = `{"result":"fail","message":"query bicycle history failed"}`;
+        var obj = JSON.parse(result);
+        console.log("/bicycle/history end -- failed", error);
+        res.status(200).send(obj);
+        return;
+    } finally {
+        gateway.disconnect();
+    }
+    var obj = JSON.parse(result);
+    console.log(`get /bicycle/history end --success, ${JSON.stringify(obj)}`);
+    res.status(200).send(obj);
+});
+
+app.get('/bicycle/abandoned', async (req, res) => {
+    console.log("get /bicycle/abandoned called");
+    const key = req.query.bicycleIdQuery;
+    const gateway = new Gateway();
+    let result;
+    try {
+        const wallet = await buildWallet(Wallets, walletPath);
+
+        await gateway.connect(ccp, {
+            wallet,
+            identity: currentId,
+            discovery: { enabled: true, asLocalhost: true }
+        });
+        const network = await gateway.getNetwork("mychannel");
+        const contract = network.getContract("bicycleCC");
+        result = await contract.evaluateTransaction('GetAbandoned', key);
+    } catch (error) {
+        result = `{"result":"fail","message":"query abandoned bicycle failed"}`;
+        var obj = JSON.parse(result);
+        console.log("/bicycle/abandoned end -- failed", error);
+        res.status(200).send(obj);
+        return;
+    } finally {
+        gateway.disconnect();
+    }
+    var obj = JSON.parse(result);
+    console.log(`get /bicycle/abandoned end --success, ${JSON.stringify(obj)}`);
+    res.status(200).send(obj);
+});
 
 // admin page routing -done
 app.get('/admin', (req, res) => {

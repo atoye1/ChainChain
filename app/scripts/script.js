@@ -13,15 +13,24 @@ let loggedIn = false;
 function displayData(data, mode) {
     landingSection.addClass("d-none");
     resultSection.empty();
+    resultSection.removeClass("d-none");
     if (mode === "register") {
         resultSection.append('<h1>' + "register mode" + '</h1>');
     } else if (mode === "query") {
-        resultSection.append('<h1>' + "query mode" + '</h1>');
+        resultSection.append('<h1>' + "Query mode" + '</h1>');
+    } else if (mode === "queryHistory") {
+        console.log("------배열데이터------");
+        console.log(data);
+        resultSection.append('<h1>' + "Query History mode" + '</h1>');
     } else if (mode === "login") {
         resultSection.append('<h1>' + "login mode" + '</h1>');
+    } else {
+        resultSection.append('<h1>' + "으잉?" + '</h1>');
+        resultSection.append('<p>' + "표시할 내용이 업습니다." + '</p>');
     }
-    resultSection.append('<p>' + JSON.stringify(data) + '</p>');
-    resultSection.removeClass("d-none");
+    if (data) {
+        resultSection.append('<p>' + JSON.stringify(data) + '</p>');
+    }
 }
 
 function checkLogin() {
@@ -94,6 +103,19 @@ $("#queryBtn").click(() => {
     $("#queryModal").modal('toggle');
 });
 
+$("#queryHistoryBtn").click(() => {
+    const bicycleIdQuery = $("#bicycleIdQuery").val();
+    let getData = {
+        bicycleIdQuery: bicycleIdQuery
+    };
+    $.get('/bicycle/history', getData, (data, status) => {
+        console.log(status);
+        console.log(data);
+        displayData(data, "queryHistory");
+    });
+    $("#queryModal").modal('toggle');
+});
+
 $("#queryMineBtn").click(() => {
     let getData = {};
     $.get(apiStubAddr, getData, (data, status) => {
@@ -119,6 +141,24 @@ $("#loginBtn").click(async () => {
     checkLogin();
     $("#loginModal").modal('toggle');
 });
+
+
+// Deserted Query : 방치된 자전거들 조회
+$("#queryDesertedMenu").click(async () => {
+    $.get('/bicycle/deserted', {}, (data, status) => {
+        console.log(data, status);
+        displayData(data);
+    });
+    // TODO: folding unfolded menu 
+});
+$("#queryDesertedBtn").click(async () => {
+    $.get('/bicycle/deserted', {}, (data, status) => {
+        console.log(data, status);
+        displayData(data);
+    });
+});
+
+
 
 signupBtn.click(() => {
 

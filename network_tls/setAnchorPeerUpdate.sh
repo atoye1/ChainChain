@@ -18,7 +18,7 @@ infoln "Fetching channel config for channel $CHANNEL_NAME"
 
 # add PATH to ensure we are picking up the correct binaries
 export PATH=${HOME}/fabric-samples/bin:$PATH
-export FABRIC_CFG_PATH=${PWD}/config
+export FABRIC_CFG_PATH=${PWD}
 
 CHANNEL_NAME="mychannel"
 

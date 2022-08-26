@@ -1,0 +1,45 @@
+<div class="modal fade" id="changeModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">자전거 상태변경</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="bicycleIdQuery" class="col-form-label">BicycleID</label>
+            <input type="text" class="form-control" id="bicycleIdQuery">
+          </div>
+          <div class="mb-3">
+            <label for="" class="col-form-label">변경모드</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+              <label class="form-check-label" for="exampleRadios1">
+                방치 상태 변경
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+              <label class="form-check-label" for="exampleRadios2">
+                소유권 이전
+              </label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">From</label>
+            <input type="text" class="form-control" id="message-text"></input>
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">To</label>
+            <input type="text" class="form-control" id="message-text"></input>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="changeBtn" type="button" class="btn btn-primary">상태 변경</button>
+      </div>
+    </div>
+  </div>
+</div>
