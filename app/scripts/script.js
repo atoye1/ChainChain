@@ -7,28 +7,65 @@ const serverAddr = "";
 
 const landingSection = $("#landing");
 const resultSection = $("#result");
-
 let loggedIn = false;
 
 function displayData(data, mode) {
     landingSection.addClass("d-none");
     resultSection.empty();
     resultSection.removeClass("d-none");
-    if (mode === "register") {
+    if (mode === "Set") {
         resultSection.append('<h1>' + "register mode" + '</h1>');
-    } else if (mode === "query") {
+    } else if (mode === "Get") {
         resultSection.append('<h1>' + "Query mode" + '</h1>');
-    } else if (mode === "queryHistory") {
+    } else if (mode === "History") {
         console.log("------배열데이터------");
         console.log(data);
         resultSection.append('<h1>' + "Query History mode" + '</h1>');
     } else if (mode === "login") {
         resultSection.append('<h1>' + "login mode" + '</h1>');
-    } else {
-        resultSection.append('<h1>' + "으잉?" + '</h1>');
-        resultSection.append('<p>' + "표시할 내용이 업습니다." + '</p>');
+    } else if (mode === "GetAbandoned") {
+        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 px-lg-5 align-items-center"></div>');
+        data.forEach(e => {
+            let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
+            $("#cardsContainer").append(
+                `<div class="col mb-4 mx-3">
+                    <div class="card" style="background-color:${bgColor}">
+                        <img src="../static/img/${e.Image}" style="height:45vh" class="img-thumbnail img-fluid card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-key"> Bicycle ID</i><span style="display:inline-block; width:95%; text-align:right;">${e.Key}</span></h5>
+                            <hr>
+                            <p class="card-text"> <i class="fa-solid fa-person"> Owner </i><span style="display:inline-block; width:95%; text-align:right;">${e.Owner}</span></p>
+                            <hr>
+                            <p class="card-text"> <i class="fa-solid fa-building"> Company </i><span style="display:inline-block; width:95%; text-align:right;">${e.Company}</span></p>
+                            <hr>
+                            <p class="card-text"><i class="fa-solid fa-bicycle"> Model </i><span style="display:inline-block; width:95%; text-align:right;">${e.Model}</span></p>
+                        </div>
+                    </div>
+                </div>`);
+        });
+    } else if (mode === "GetAll") {
+        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 px-lg-5"></div>');
+        data.forEach(e => {
+            let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
+            $("#cardsContainer").append(
+                `<div class="col mb-4 mx-3">
+                    <div class="card" style="background-color:${bgColor}">
+                        <img src="../static/img/${e.Image}" style="height:45vh" class="img-thumbnail img-fluid card-img-top h-330" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-key"> Bicycle ID</i><span style="display:inline-block; width:95%; text-align:right;">${e.Key}</span></h5>
+                            <hr>
+                            <p class="card-text"> <i class="fa-solid fa-person"> Owner </i><span style="display:inline-block; width:95%; text-align:right;">${e.Owner}</span></p>
+                            <hr>
+                            <p class="card-text"> <i class="fa-solid fa-building"> Company </i><span style="display:inline-block; width:95%; text-align:right;">${e.Company}</span></p>
+                            <hr>
+                            <p class="card-text"><i class="fa-solid fa-bicycle"> Model </i><span style="display:inline-block; width:95%; text-align:right;">${e.Model}</span></p>
+                        </div>
+                    </div>
+                </div>`);
+        });
     }
     if (data) {
+        resultSection.append('<h4>' + "Displaying Data for Debugging" + '</h4>');
         resultSection.append('<p>' + JSON.stringify(data) + '</p>');
     }
 }
@@ -82,7 +119,7 @@ $("#registerBtn").click(async () => {
         console.log("post to /bicycle successful");
         console.log(status);
         console.log(data);
-        displayData(data, "register");
+        displayData(data, "Set");
     });
     $("#registerModal").modal('toggle');
     console.log("registerBtn Clicked");
@@ -98,7 +135,7 @@ $("#queryBtn").click(() => {
     $.get('/bicycle', getData, (data, status) => {
         console.log(status);
         console.log(data);
-        displayData(data, "query");
+        displayData(data, "Get");
     });
     $("#queryModal").modal('toggle');
 });
@@ -111,7 +148,7 @@ $("#queryHistoryBtn").click(() => {
     $.get('/bicycle/history', getData, (data, status) => {
         console.log(status);
         console.log(data);
-        displayData(data, "queryHistory");
+        displayData(data, "History");
     });
     $("#queryModal").modal('toggle');
 });
@@ -144,20 +181,26 @@ $("#loginBtn").click(async () => {
 
 
 // Deserted Query : 방치된 자전거들 조회
-$("#queryDesertedMenu").click(async () => {
-    $.get('/bicycle/deserted', {}, (data, status) => {
+$("#queryAbandonedMenu").click(async () => {
+    $.get('/bicycle/abandoned', {}, (data, status) => {
         console.log(data, status);
-        displayData(data);
+        displayData(data, "GetAbandoned");
     });
     // TODO: folding unfolded menu 
 });
-$("#queryDesertedBtn").click(async () => {
-    $.get('/bicycle/deserted', {}, (data, status) => {
+$("#queryAbandonedBtn").click(async () => {
+    $.get('/bicycle/abandoned', {}, (data, status) => {
         console.log(data, status);
-        displayData(data);
+        displayData(data, "GetAbandoned");
     });
 });
 
+$("#queryAllMenu").click(async () => {
+    $.get('/bicycle/all', {}, (data, status) => {
+        console.log(data, status);
+        displayData(data, "GetAll");
+    });
+});
 
 
 signupBtn.click(() => {

@@ -87,24 +87,62 @@ func (s *SmartContract) Get(ctx contractapi.TransactionContextInterface, bicycle
 	return asset, nil
 }
 
-func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, key string, value string) error {
-	parsedValue := Bicycle{}
-	json.Unmarshal([]byte(value), &parsedValue)
+func (s *SmartContract) GetAll(ctx contractapi.TransactionContextInterface) ([]Bicycle, error) {
+	log.Printf("Getting All Bicycles")
 
-	bicycle := Bicycle{
-		Key:       key,
-		Owner:     parsedValue.Owner,
-		Company:   parsedValue.Company,
-		Model:     parsedValue.Model,
-		Colour:    parsedValue.Colour,
-		Image:     parsedValue.Image,
-		Comment:   parsedValue.Comment,
-		Location:  parsedValue.Location,
-		Abandoned: parsedValue.Abandoned,
+	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+
+	if err != nil {
+		return nil, err
 	}
-	fmt.Println(bicycle)
-	assetAsBytes, _ := json.Marshal(bicycle)
-	return ctx.GetStub().PutState(key, assetAsBytes)
+	defer resultsIterator.Close()
+	results := []Bicycle{}
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+		bicycle := new(Bicycle)
+		_ = json.Unmarshal(queryResponse.Value, bicycle)
+
+		bicycle.Key = queryResponse.Key
+		results = append(results, *bicycle)
+	}
+	return results, nil
+}
+
+func (s *SmartContract) GetAbandoned(ctx contractapi.TransactionContextInterface) ([]Bicycle, error) {
+	log.Printf("Getting All Abandoned Bicycles")
+
+	//TODO: Optimize with conditioned query
+	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+	results := []Bicycle{}
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+		//TODO : get query results
+		bicycle := new(Bicycle)
+		_ = json.Unmarshal(queryResponse.Value, bicycle)
+		fmt.Println(bicycle)
+		fmt.Println(bicycle.Key)
+		fmt.Println(bicycle.Abandoned)
+
+		if bicycle.Abandoned == "true" {
+			fmt.Printf("This bicycle %s is Abandoned", bicycle.Key)
+			bicycle.Key = queryResponse.Key
+			results = append(results, *bicycle)
+		}
+	}
+	return results, nil
 }
 
 func (s *SmartContract) History(ctx contractapi.TransactionContextInterface, key string) ([]HistoryQueryResult, error) {
@@ -150,37 +188,25 @@ func (s *SmartContract) History(ctx contractapi.TransactionContextInterface, key
 	}
 	return records, nil
 }
-func (s *SmartContract) GetAbandoned(ctx contractapi.TransactionContextInterface) ([]Bicycle, error) {
-	log.Printf("Getting All Abandoned Bicycle")
 
-	//TODO: Optimize with conditioned query
-	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, key string, value string) error {
+	parsedValue := Bicycle{}
+	json.Unmarshal([]byte(value), &parsedValue)
 
-	if err != nil {
-		return nil, err
+	bicycle := Bicycle{
+		Key:       key,
+		Owner:     parsedValue.Owner,
+		Company:   parsedValue.Company,
+		Model:     parsedValue.Model,
+		Colour:    parsedValue.Colour,
+		Image:     parsedValue.Image,
+		Comment:   parsedValue.Comment,
+		Location:  parsedValue.Location,
+		Abandoned: parsedValue.Abandoned,
 	}
-	defer resultsIterator.Close()
-	results := []Bicycle{}
-	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
-
-		if err != nil {
-			return nil, err
-		}
-		//TODO : get query results
-		bicycle := new(Bicycle)
-		_ = json.Unmarshal(queryResponse.Value, bicycle)
-		fmt.Println(bicycle)
-		fmt.Println(bicycle.Key)
-		fmt.Println(bicycle.Abandoned)
-
-		if bicycle.Abandoned == "true" {
-			fmt.Printf("This bicycle %s is Abandoned", bicycle.Key)
-			bicycle.Key = queryResponse.Key
-			results = append(results, *bicycle)
-		}
-	}
-	return results, nil
+	fmt.Println(bicycle)
+	assetAsBytes, _ := json.Marshal(bicycle)
+	return ctx.GetStub().PutState(key, assetAsBytes)
 }
 
 /*

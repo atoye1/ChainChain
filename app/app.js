@@ -148,7 +148,6 @@ app.get('/bicycle/history', async (req, res) => {
 
 app.get('/bicycle/abandoned', async (req, res) => {
     console.log("get /bicycle/abandoned called");
-    const key = req.query.bicycleIdQuery;
     const gateway = new Gateway();
     let result;
     try {
@@ -161,7 +160,7 @@ app.get('/bicycle/abandoned', async (req, res) => {
         });
         const network = await gateway.getNetwork("mychannel");
         const contract = network.getContract("bicycleCC");
-        result = await contract.evaluateTransaction('GetAbandoned', key);
+        result = await contract.evaluateTransaction('GetAbandoned');
     } catch (error) {
         result = `{"result":"fail","message":"query abandoned bicycle failed"}`;
         var obj = JSON.parse(result);
@@ -173,6 +172,35 @@ app.get('/bicycle/abandoned', async (req, res) => {
     }
     var obj = JSON.parse(result);
     console.log(`get /bicycle/abandoned end --success, ${JSON.stringify(obj)}`);
+    res.status(200).send(obj);
+});
+
+app.get('/bicycle/all', async (req, res) => {
+    console.log("get /bicycle/all called");
+    const gateway = new Gateway();
+    let result;
+    try {
+        const wallet = await buildWallet(Wallets, walletPath);
+
+        await gateway.connect(ccp, {
+            wallet,
+            identity: currentId,
+            discovery: { enabled: true, asLocalhost: true }
+        });
+        const network = await gateway.getNetwork("mychannel");
+        const contract = network.getContract("bicycleCC");
+        result = await contract.evaluateTransaction('GetAll');
+    } catch (error) {
+        result = `{"result":"fail","message":"query all bicycle failed"}`;
+        var obj = JSON.parse(result);
+        console.log("/bicycle/all end -- failed", error);
+        res.status(200).send(obj);
+        return;
+    } finally {
+        gateway.disconnect();
+    }
+    var obj = JSON.parse(result);
+    console.log(`get /bicycle/all end --success, ${JSON.stringify(obj)}`);
     res.status(200).send(obj);
 });
 
