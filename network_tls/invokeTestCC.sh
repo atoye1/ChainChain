@@ -30,6 +30,8 @@ setGlobals() {
 
 export FABRIC_CFG_PATH=/home/${USER}/fabric-samples/config
 
+peer chaincode query -C mychannel -n ${CC_NAME} -c '{"Args":["Get","1234"]}'
+
 setGlobals 1
 fcn_call='{"Args":["Set", "fakeKey1", "{\"Owner\":\"fakeUserId\", \"Company\":\"fakeCompany\", \"Model\":\"fakeModel\", \"Colour\":\"fakeColour\", \"Image\":\"fakeImage\", \"Comment\":\"fakeComment\", \"Location\":\"fakeLocation\", \"IsDeserted\":\"false\"}"]}'
 
@@ -39,4 +41,4 @@ sleep 3
 
 
 setGlobals 1
-peer chaincode query -C mychannel -n ${CC_NAME} -c '{"Args":["Get","fakeKey1"]}'
+peer chaincode query -C mychannel -n ${CC_NAME} -c '{"Args":["Get","1234"]}'

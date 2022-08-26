@@ -30,6 +30,8 @@ app.set('port', port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 const currentId = 'admin';
+const CC_NAME = 'bicycleCC';
+const CH_NAME = 'mychannel';
 
 
 app.use(express.urlencoded({ extended: false }));
@@ -75,43 +77,43 @@ app.get('/bicycle', async (req, res) => {
 });
 
 app.post('/bicycle', async (req, res) => {
-    console.log("server triggered by client");
-    console.log(req.body.postData);
-    console.log(id, pw);
+    console.log("POST /bicycle trigger");
+
+    let result;
+    const key = req.body.bicycleId;
+    delete req.body.bicycleId;
+    const value = JSON.stringify(req.body);
+    console.log("printing key and value for chaincode", key, value);
+
+    const gateway = new Gateway();
+
     try {
-        const caInfo = ccp.certificateAuthorities["ca.org1.example.com"];
-        const caTLSCACerts = caInfo.tlsCACerts.pem;
-        const ca = new FabricCaServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.canName);
+        const wallet = await buildWallet(Wallets, walletPath);
 
-        const walletPath = path.join(process.cwd(), "wallet");
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        await gateway.connect(ccp, {
+            wallet,
+            identity: currentId,
+            discovery: { enabled: true, asLocalhost: true }
+        });
+        const network = await gateway.getNetwork(CH_NAME);
+        const contract = network.getContract(CC_NAME);
+        result = await contract.submitTransaction('Set', key, value);
 
-        const identity = await wallet.get(id);
-        if (identity) {
-            console.log(`An identiy for the admin user ${id} already exists in the wallet`);
-            const res_str = `{"result":"failed", "msg":"An identity for the admin user ${id} already exists in the wallet"}`;
-            res.json(JSON.parse(res_str));
-            return;
-        }
-        const enrollment = await ca.enroll({ enrollmentID: id, enrollmentSecret: pw });
-        const x509Identity = {
-            credentials: {
-                certificate: enrollment.certificate,
-                privateKey: enrollment.key.toBytes(),
-            },
-            mspId: "Org1MSP",
-            type: "X.509",
-        };
-        await wallet.put(id, x509Identity);
-
-        console.log('Successfully enrolled admin user "admin" and imported it into the wallet');
-        const res_str = `{"result":"success", "msg":"Successfully enrolled adminuser ${id} in the wallet"}`;
-        res.status(200).json(JSON.parse(res_str));
     } catch (error) {
-        console.error(`**ERROR CATCHED** Failed to enrol admin user ${id}`);
-        const res_str = `{"result":"failed","msg":"failed to enrol admin user - ${id} : ${error}"}`;
-        res.json(JSON.parse(res_str));
+        let result = `{"result":"failed","message":"query bicycle failed"}`;
+        var obj = JSON.parse(result);
+        console.log("/process/create end -- failed", error);
+        res.status(200).send(obj);
+        return;
+    } finally {
+        gateway.disconnect();
     }
+
+    result = `{"result":"success", "key": "` + key + `", "message": ` + value + `}`;
+    console.log(result);
+    console.log(`post /bicycle end --success`);
+    var obj = JSON.parse(result);
+    res.status(200).send(obj);
 });
 
 

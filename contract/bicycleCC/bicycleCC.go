@@ -89,7 +89,7 @@ func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, key str
 	json.Unmarshal([]byte(value), &parsedValue)
 
 	asset := Bicycle{
-		Owner:      "fakeUserId",
+		Owner:      parsedValue.Owner,
 		Company:    parsedValue.Company,
 		Model:      parsedValue.Model,
 		Colour:     parsedValue.Colour,

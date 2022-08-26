@@ -4,7 +4,25 @@ const logoutBtn = $("#logoutBtn");
 const modelName = $("#modelName");
 const apiStubAddr = "https://reqres.in/api/users";
 const serverAddr = "";
+
+const landingSection = $("#landing");
+const resultSection = $("#result");
+
 let loggedIn = false;
+
+function displayData(data, mode) {
+    landingSection.addClass("d-none");
+    resultSection.empty();
+    if (mode === "register") {
+        resultSection.append('<h1>' + "register mode" + '</h1>');
+    } else if (mode === "query") {
+        resultSection.append('<h1>' + "query mode" + '</h1>');
+    } else if (mode === "login") {
+        resultSection.append('<h1>' + "login mode" + '</h1>');
+    }
+    resultSection.append('<p>' + JSON.stringify(data) + '</p>');
+    resultSection.removeClass("d-none");
+}
 
 function checkLogin() {
     if (loggedIn) {
@@ -41,22 +59,23 @@ $("#registerBtn").click(async () => {
     const colour = $("#colour").val();
     const bicycleImg = $("#bicycleImg").val();
     const textComment = $("#textComment").val();
-    let postData = {
-        ownerId: ownerId,
+    // TODO : SERVER API CONNECTION
+
+    await $.post('/bicycle', {
         bicycleId: bicycleId,
+        ownerId: ownerId,
         companyName: companyName,
         modelName: modelName,
         colour: colour,
         bicycleImg: bicycleImg,
         textComment: textComment,
-    };
-    console.log(postData);
-
-    // TODO : SERVER API CONNECTION
-    await $.post('/bicycle', postData, (data, status) => {
+    }, (data, status) => {
+        console.log("post to /bicycle successful");
         console.log(status);
         console.log(data);
+        displayData(data, "register");
     });
+    $("#registerModal").modal('toggle');
     console.log("registerBtn Clicked");
 });
 
@@ -70,7 +89,9 @@ $("#queryBtn").click(() => {
     $.get('/bicycle', getData, (data, status) => {
         console.log(status);
         console.log(data);
+        displayData(data, "query");
     });
+    $("#queryModal").modal('toggle');
 });
 
 $("#queryMineBtn").click(() => {
@@ -79,6 +100,7 @@ $("#queryMineBtn").click(() => {
         console.log(status);
         console.log(data);
     });
+    $("#queryModal").modal('toggle');
 });
 
 $("#loginBtn").click(async () => {
@@ -91,9 +113,11 @@ $("#loginBtn").click(async () => {
     await $.post(apiStubAddr, postData, (data, status) => {
         console.log(status);
         console.log(data);
+        displayData(data, "login");
     });
     console.log("login btn triggered");
     checkLogin();
+    $("#loginModal").modal('toggle');
 });
 
 signupBtn.click(() => {
@@ -105,15 +129,6 @@ $("#logoutMenu").click(() => {
     checkLogin();
 });
 
-$("#createAdminWallet").click(async () => {
-    let postData = {};
-    await $.post('/adminWallet', postData, (data, status) => {
-        console.log(status);
-        console.log(data);
-        $("#debugReult").empty();
-        $("#debugResult").append("<p>" + JSON.stringify(data) + "</p>");
-    });
-});
 
 $("#createUserWallet").click(async () => {
     let postData = {};
