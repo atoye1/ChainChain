@@ -5,6 +5,7 @@ set +x
 export CC_PATH="${PWD}/../contract/bicycleCC"
 export CC_NAME="bicycleCC"
 export CC_VERSION="1"
+export CHANNEL_NAME="mychannel"
 
 setGlobals() {
     USING_ORG=$1
@@ -51,6 +52,9 @@ setGlobals 2
 peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence 1 >&log.txt
 cat log.txt
 
+set -x
+
+CC_NAME=bicycleCC
 ## check commitreadiness
 peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --sequence 1 --tls --cafile $ORDERER_CA --output json
 

@@ -122,6 +122,8 @@ network_tls/organizations/*
 network_tls/config/*
 network_tls/system-genesis-block/*
 network_tls/channel-artifacts/*
+network_tls/ccps/*
+app/wallet
 log.txt
 old_network/organizations
 old_network/crypto-config/

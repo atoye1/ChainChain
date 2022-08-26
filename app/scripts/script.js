@@ -65,21 +65,9 @@ $("#queryBtn").click(() => {
     let getData = {
         bicycleIdQuery: bicycleIdQuery
     };
-    let registerEndpoint = "/register/bicycle";
+    let queryEndpoint = "/bicycle";
     console.log(bicycleIdQuery);
-    $.get(apiStubAddr, getData, (data, status) => {
-        console.log(status);
-        console.log(data);
-    });
-});
-
-$("#queryBtn").click(() => {
-    const bicycleIdQuery = $("#bicycleIdQuery").val();
-    let getData = {
-        bicycleIdQuery: bicycleIdQuery
-    };
-    console.log(bicycleIdQuery);
-    $.get(apiStubAddr, getData, (data, status) => {
+    $.get('/bicycle', getData, (data, status) => {
         console.log(status);
         console.log(data);
     });
@@ -117,6 +105,25 @@ $("#logoutMenu").click(() => {
     checkLogin();
 });
 
+$("#createAdminWallet").click(async () => {
+    let postData = {};
+    await $.post('/adminWallet', postData, (data, status) => {
+        console.log(status);
+        console.log(data);
+        $("#debugReult").empty();
+        $("#debugResult").append("<p>" + JSON.stringify(data) + "</p>");
+    });
+});
+
+$("#createUserWallet").click(async () => {
+    let postData = {};
+    await $.post('/userWallet', postData, (data, status) => {
+        console.log(status);
+        console.log(data);
+        $("#debugResult").empty();
+        $("#debugResult").append("<p>" + JSON.stringify(data) + "</p>");
+    });
+});
 
 // show loading wheel when ajaxing
 $(document).on({

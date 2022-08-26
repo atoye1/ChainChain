@@ -39,12 +39,82 @@ app.use(express.static(__dirname + "/"));
 app.use('/static', serveIndex(__dirname + '/'));
 
 // main page routing -done
-app.get('/', (req, res) => {
-    console.log("index page called");
-    res.render('index', (err, html) => {
-        res.end(html);
-    });
+
+
+app.get('/bicycle', async (req, res) => {
+    console.log("get /bicycle called");
+    console.log(req.query.bicycleIdQuery);
+    const key = req.query.bicycleIdQuery;
+    const gateway = new Gateway();
+    let result;
+    try {
+        const wallet = await buildWallet(Wallets, walletPath);
+
+        await gateway.connect(ccp, {
+            wallet,
+            identity: currentId,
+            discovery: { enabled: true, asLocalhost: true }
+        });
+        const network = await gateway.getNetwork("mychannel");
+        const contract = network.getContract("bicycleCC");
+        result = await contract.evaluateTransaction('Get', key);
+
+    } catch (error) {
+        result = `{"result":"faile","message":"query bicycle failed"}`;
+        var obj = JSON.parse(result);
+        console.log("/process/create end -- failed", error);
+        res.status(200).send(obj);
+        return;
+    } finally {
+        gateway.disconnect();
+    }
+    result = `{"result":"success", "message":${result}}`;
+    console.log(`get /bicycle end --success, ${result}`);
+    var obj = JSON.parse(result);
+    res.status(200).send(obj);
 });
+
+app.post('/bicycle', async (req, res) => {
+    console.log("server triggered by client");
+    console.log(req.body.postData);
+    console.log(id, pw);
+    try {
+        const caInfo = ccp.certificateAuthorities["ca.org1.example.com"];
+        const caTLSCACerts = caInfo.tlsCACerts.pem;
+        const ca = new FabricCaServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.canName);
+
+        const walletPath = path.join(process.cwd(), "wallet");
+        const wallet = await Wallets.newFileSystemWallet(walletPath);
+
+        const identity = await wallet.get(id);
+        if (identity) {
+            console.log(`An identiy for the admin user ${id} already exists in the wallet`);
+            const res_str = `{"result":"failed", "msg":"An identity for the admin user ${id} already exists in the wallet"}`;
+            res.json(JSON.parse(res_str));
+            return;
+        }
+        const enrollment = await ca.enroll({ enrollmentID: id, enrollmentSecret: pw });
+        const x509Identity = {
+            credentials: {
+                certificate: enrollment.certificate,
+                privateKey: enrollment.key.toBytes(),
+            },
+            mspId: "Org1MSP",
+            type: "X.509",
+        };
+        await wallet.put(id, x509Identity);
+
+        console.log('Successfully enrolled admin user "admin" and imported it into the wallet');
+        const res_str = `{"result":"success", "msg":"Successfully enrolled adminuser ${id} in the wallet"}`;
+        res.status(200).json(JSON.parse(res_str));
+    } catch (error) {
+        console.error(`**ERROR CATCHED** Failed to enrol admin user ${id}`);
+        const res_str = `{"result":"failed","msg":"failed to enrol admin user - ${id} : ${error}"}`;
+        res.json(JSON.parse(res_str));
+    }
+});
+
+
 
 // admin page routing -done
 app.get('/admin', (req, res) => {
@@ -59,10 +129,10 @@ app.get('/user', (req, res) => {
     });
 });
 
-// admin post request - TODO
-app.post('/bicycle', async (req, res) => {
-    console.log("server triggered by client");
-    console.log(req.body.postData);
+// Create adminWallet
+app.post('/adminWallet', async (req, res) => {
+    const id = "admin";
+    const pw = "adminpw";
     console.log(id, pw);
     try {
         const caInfo = ccp.certificateAuthorities["ca.org1.example.com"];
@@ -100,6 +170,75 @@ app.post('/bicycle', async (req, res) => {
     }
 });
 
+// Create User Wallet
+app.post('/userWallet', async (req, res) => {
+    var id = req.body.id;
+    const userrole = "client";
+    console.log("making user wallet with next info", id, userrole);
+    try {
+        const caInfo = ccp.certificateAuthorities["ca.org1.example.com"];
+        const caTLSCACerts = caInfo.tlsCACerts.pem;
+        const ca = new FabricCaServices(caInfo.url, {
+            trustedRoots: caTLSCACerts, verify: false
+        }, caInfo.caName);
+
+        const walletPath = path.join(process.cwd(), "wallet");
+        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        // Check to see if we've already enrolled the user
+        const userIdentity = await wallet.get(id);
+        if (userIdentity) {
+            console.log(`An identity for the user ${id} already exists in the wallet`);
+            const res_str = `{"result":"failed","msg":"An identity for the user ${id} already exists in the wallet"}`;
+            res.send(JSON.parse(res_str));
+            return;
+        }
+
+        const adminIdentity = await wallet.get("admin");
+        if (!adminIdentity) {
+            console.log('An identity for the admin user "admin" does not exist in the wallet');
+            const res_str = `{"result":"failed", "msg":"An identity for the admin user ${id} does not exists in the wallet"}`;
+            res.json(JSON.parse(res_str));
+            return;
+        }
+
+        const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+        const adminUser = await provider.getUserContext(adminIdentity, "admin");
+
+        const secret = await ca.register({
+            affiliation: "org1.department1",
+            enrollmentID: id,
+            role: userrole,
+        },
+            adminUser);
+        const enrollment = await ca.enroll({
+            enrollmentID: id,
+            enrollmentSecret: secret,
+        });
+
+        const x509Identity = {
+            credentials: {
+                certificate: enrollment.certificate,
+                privateKey: enrollment.key.toBytes(),
+            },
+            mspId: "Org1MSP",
+            type: "X.509",
+        };
+        await wallet.put(id, x509Identity);
+        console.log('Successfully registered and enrolled admin user "appUser" and imported it into the wallet');
+        const res_str = `{"result":"Success", "msg":"Successfully enrolled normal user ${id} in the wallet"}`;
+        res.status(200).json(JSON.parse(res_str));
+    } catch (error) {
+        console.error(`Failed to enroll normal user ${id}`);
+        res.send(error);
+        //res.json(JSON.parse(res_str));
+    }
+});
+
+
+
+
 app.get('/process/userlist', async (req, res) => {
     const walletPath = path.join(process.cwd(), "wallet");
     const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -123,72 +262,6 @@ app.get('/process/userlist', async (req, res) => {
     }
 });
 
-app.post('/process/user', async (req, res) => {
-    var id = req.body.id;
-    var userrole = req.body.userrole;
-    console.log(id, userrole);
-    try {
-        const caInfo = ccp.certificateAuthorities["ca.org1.example.com"];
-        const caTLSCACerts = caInfo.tlsCACerts.pem;
-        const ca = new FabricCaServices(caInfo.url, {
-            trustedRoots: caTLSCACerts, verify: false
-        }, caInfo.caName);
-
-        const walletPath = path.join(process.cwd(), "wallet");
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-
-        // Check to see if we've already enrolled the user
-        const userIdentity = await wallet.get(id);
-        if (userIdentity) {
-            console.log(`An identity for the user ${id} already exists in the wallet`);
-            const res_str = `{"result":"failed","msg":"An identity for the user ${id} already exists in the wallet}`;
-            res.json(JSON.parse(res_str));
-            return;
-        }
-
-        const adminIdentity = await wallet.get("admin");
-        if (!adminIdentity) {
-            console.log('An identity for the admin user "admin" does not exist in the wallet');
-            const res_str = `{"result":"failed", "msg":"An identity for the admin user ${id} does not exists in the wallet"}`;
-            res.json(JSON.parse(res_str));
-            return;
-        }
-
-        const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
-        const adminUser = await provider.getUserContext(adminIdentity, "admin");
-
-        console.log(1);
-        const secret = await ca.register({
-            affiliation: "org1.department1",
-            enrollmentID: id,
-            role: userrole,
-        },
-            adminUser);
-        console.log(2);
-        const enrollment = await ca.enroll({
-            enrollmentID: id,
-            enrollmentSecret: secret,
-        });
-        console.log(3);
-        const x509Identity = {
-            credentials: {
-                certificate: enrollment.certificate,
-                privateKey: enrollment.key.toBytes(),
-            },
-            mspId: "Org1MSP",
-            type: "X.509",
-        };
-        await wallet.put(id, x509Identity);
-        console.log('Successfully registered and enrolled admin user "appUser" and imported it into the wallet');
-        const res_str = `{"result":"Success", "msg":"Successfully enrolled user ${id}} in the wallet"}`;
-        res.status(200).json(JSON.parse(res_str));
-    } catch (error) {
-        console.error(`Failed to enroll admin user ${id}`);
-        const res_str = `{"result":"failed", "msg":"failed to register user - ${id} : ${error}"}`;
-        res.json(JSON.parse(res_str));
-    }
-});
 
 // called /process/create inside
 app.get('/create', (req, res) => {
@@ -236,11 +309,7 @@ app.post('/process/create', async (req, res) => {
     res.status(200).send(obj);
 });
 
-app.get('/query', (req, res) => {
-    res.render('query_template', (err, html) => {
-        res.end(html);
-    });
-});
+
 
 app.get('/process/query', async (req, res) => {
     console.log('/process/query called');
@@ -407,6 +476,14 @@ app.get('/process/queryAll', async (req, res) => {
     console.log("/asset get end -- success", result);
     var obj = JSON.parse(result);
     res.status(200).send(obj);
+});
+
+
+app.get('/', (req, res) => {
+    console.log("index page called");
+    res.render('index', (err, html) => {
+        res.end(html);
+    });
 });
 
 // Running server on port 6000
