@@ -45,7 +45,7 @@ function displayData(data, mode) {
                 </div>`);
         });
     } else if (mode === "GetAll") {
-        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 px-lg-5 justify-content-center"></div>');
+        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 px-lg-5 justify-content-left"></div>');
         data.forEach(e => {
             let imagePath = e.Image === "" ? "no_image_available.jpeg" : e.Image;
             let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
@@ -100,6 +100,7 @@ $("#companyName").change(() => {
 
 // Event Listeners using jquery Syntax
 $("#registerBtn").click(async () => {
+    $('.navbar-toggler').click();
     const Owner = $("#ownerId").val();
     const Key = $("#bicycleId").val();
     const Company = $("#companyName").val();
@@ -129,10 +130,12 @@ $("#registerBtn").click(async () => {
     });
 
     $("#registerModal").modal('toggle');
+
     console.log("registerBtn Clicked");
 });
 
 $("#queryBtn").click(() => {
+    $('.navbar-toggler').click();
     const bicycleIdQuery = $("#bicycleIdQuery").val();
     let getData = {
         bicycleIdQuery: bicycleIdQuery
@@ -148,6 +151,7 @@ $("#queryBtn").click(() => {
 });
 
 $("#queryHistoryBtn").click(() => {
+    $('.navbar-toggler').click();
     const bicycleIdQuery = $("#bicycleIdQuery").val();
     let getData = {
         bicycleIdQuery: bicycleIdQuery
@@ -161,6 +165,7 @@ $("#queryHistoryBtn").click(() => {
 });
 
 $("#queryMineBtn").click(() => {
+    $('.navbar-toggler').click();
     let getData = {};
     $.get(apiStubAddr, getData, (data, status) => {
         console.log(status);
@@ -170,6 +175,7 @@ $("#queryMineBtn").click(() => {
 });
 
 $("#loginBtn").click(async () => {
+    $('.navbar-toggler').click();
     const loginId = $("#loginId").val();
     const loginPw = $("#loginPw").val();
     let postData = {
@@ -188,6 +194,7 @@ $("#loginBtn").click(async () => {
 
 // Deserted Query : 방치된 자전거들 조회
 $("#queryAbandonedBtn").click(async () => {
+    $('.navbar-toggler').click();
     $.get('/bicycle/abandoned', {}, (data, status) => {
         console.log(data, status);
         displayData(data, "GetAbandoned");
@@ -196,6 +203,7 @@ $("#queryAbandonedBtn").click(async () => {
 });
 
 $("#queryAllBtn").click(async () => {
+    $('.navbar-toggler').click();
     $.get('/bicycle/all', {}, (data, status) => {
         console.log(data, status);
         displayData(data, "GetAll");
@@ -204,8 +212,10 @@ $("#queryAllBtn").click(async () => {
 });
 
 $("#reportBtn").click(async () => {
+    $('.navbar-toggler').click();
     const Key = $("#bicycleIdForChange").val();
     const Mode = $("#reportMode").val();;
+    console.log(Mode);
     console.log("post to /bicycle/state successful");
     await $.post('/bicycle/state', {
         Key: Key,
@@ -217,11 +227,8 @@ $("#reportBtn").click(async () => {
     $("#changeModal").modal('toggle');
 });
 
-signupBtn.click(() => {
-
-});
-
 $("#logoutMenu").click(() => {
+    $('.navbar-toggler').click();
     loggedIn = false;
     checkLogin();
 });
@@ -254,3 +261,5 @@ $("#changeLoginStatus").click(() => {
     loggedIn = loggedIn ? false : true;
     checkLogin();
 });
+
+$("#navbarCollapse").removeClass('show');

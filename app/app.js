@@ -14,12 +14,12 @@ const { Gateway, Wallets } = require("fabric-network");
 const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
 const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
 const mspOrg1 = 'Org1MSP';
-const ccp = buildCCPOrg1();
-const caClient = buildCAClient(FabricCaServices, ccp, 'ca.org1.example.com');
+// const ccp = buildCCPOrg1();
+// const caClient = buildCAClient(FabricCaServices, ccp, 'ca.org1.example.com');
 const walletPath = path.join(__dirname, 'wallet');
 
+const triggerCC = require('./ChaincodeUtils.js').triggerCC;
 // Fabric settings done
-
 
 // Get express object
 let app = express();
@@ -29,9 +29,6 @@ app.set('port', port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 const currentId = 'admin';
-const CC_NAME = 'bicycleCC';
-const CH_NAME = 'mychannel';
-
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -44,191 +41,131 @@ app.use('/static', serveIndex(__dirname + '/'));
 
 app.get('/bicycle', async (req, res) => {
     console.log("get /bicycle called");
-    console.log(req.query.bicycleIdQuery);
     const key = req.query.bicycleIdQuery;
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
+    const value = "";
+    console.log(key);
 
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("bicycleCC");
-        result = await contract.evaluateTransaction('Get', key);
+    let result_CC = await triggerCC(currentId, "Get", key, value);
+    console.log(result_CC);
+    // result_CC = JSON.parse(result_CC);
 
-    } catch (error) {
-        result = `{"result":"faile","message":"query bicycle failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/create end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
+    if (result_CC.result == "fail") {
+        console.log(`GET /bicycle end --fail, ${result_CC}`);
+    } else {
+        console.log(`GET /bicycle end --success, ${result_CC}`);
     }
-    result = `{"result":"success", "message":${result}}`;
-    console.log(`get /bicycle end --success, ${result}`);
-    var obj = JSON.parse(result);
-    res.status(200).send(obj);
+    // var obj = JSON.parse(result);
+    res.status(200).send(result_CC);
 });
 
 app.post('/bicycle', async (req, res) => {
     console.log("POST /bicycle triggered");
-
-    let result;
     const key = req.body.Key;
     const value = JSON.stringify(req.body);
-    console.log("printing key and value for chaincode", key, value);
-    const gateway = new Gateway();
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
 
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-        const network = await gateway.getNetwork(CH_NAME);
-        const contract = network.getContract(CC_NAME);
-        result = await contract.submitTransaction('Set', key, value);
+    let result_CC = await triggerCC(currentId, "Set", key, value);
 
-    } catch (error) {
-        let result = `{"result":"failed","message":"query bicycle failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/create end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
+    if (result_CC.result == "fail") {
+        console.log(`POST /bicycle end --fail, ${result_CC}`);
+    } else {
+        console.log(`POST /bicycle end --success, ${result_CC}`);
     }
-
-    result = `{"result":"success", "key": "` + key + `", "message": ` + value + `}`;
-    console.log(result);
-    console.log(`post /bicycle end --success`);
-    var obj = JSON.parse(result);
-    res.status(200).send(obj);
+    res.status(200).send(result_CC);
 });
 
 app.post('/bicycle/state', async (req, res) => {
     console.log("POST /bicycle/state triggered");
-    let result;
     const key = req.body.Key;
-    const value = JSON.stringify(req.body);
-    console.log("printing key and value for chaincode", key, value);
-    const gateway = new Gateway();
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
-
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-        const network = await gateway.getNetwork(CH_NAME);
-        const contract = network.getContract(CC_NAME);
-        result = await contract.submitTransaction('Set', Key);
-
-    } catch (error) {
-        let result = `{"result":"failed","message":"query bicycle failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/create end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
+    const mode = req.body.Mode;
+    const value = "";
+    console.log(mode);
+    if (mode == "Report") {
+        let result_CC = await triggerCC(currentId, "SetAbandoned", key, value);
+    } else {
+        let result_CC = await triggerCC(currentId, "SetResolved", key, value);
     }
+    result_CC = JSON.parse(result_CC);
 
+    if (result_CC.result == "fail") {
+        console.log(`POST /bicycle end --fail, ${result_CC}`);
+    } else {
+        console.log(`POST /bicycle end --success, ${result_CC}`);
+    }
+    res.status(200).send(result_CC);
+    // const gateway = new Gateway();
+    // try {
+    //     const wallet = await buildWallet(Wallets, walletPath);
+
+    //     await gateway.connect(ccp, {
+    //         wallet,
+    //         identity: currentId,
+    //         discovery: { enabled: true, asLocalhost: true }
+    //     });
+    //     const network = await gateway.getNetwork(CH_NAME);
+    //     const contract = network.getContract(CC_NAME);
+    //     result = await contract.submitTransaction('Set', Key);
+
+    // } catch (error) {
+    //     let result = `{"result":"failed","message":"query bicycle failed"}`;
+    //     var obj = JSON.parse(result);
+    //     console.log("/process/create end -- failed", error);
+    //     res.status(200).send(obj);
+    //     return;
+    // } finally {
+    //     gateway.disconnect();
+    // }
 });
 
 app.get('/bicycle/history', async (req, res) => {
     console.log("get /bicycle/history called");
     const key = req.query.bicycleIdQuery;
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
+    const value = "";
 
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("bicycleCC");
-        result = await contract.evaluateTransaction('History', key);
-    } catch (error) {
-        result = `{"result":"fail","message":"query bicycle history failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/bicycle/history end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
+    let result_CC = await triggerCC(currentId, "History", key, value);
+    console.log(result_CC);
+    // result_CC = JSON.parse(result_CC);
+
+    if (result_CC.result == "fail") {
+        console.log(`GET /bicycle/history end --fail, ${result_CC}`);
+    } else {
+        console.log(`GET /bicycle/history end --success, ${result_CC}`);
     }
-    var obj = JSON.parse(result);
-    console.log(`get /bicycle/history end --success, ${JSON.stringify(obj)}`);
-    res.status(200).send(obj);
+    // var obj = JSON.parse(result);
+    res.status(200).send(result_CC);
 });
 
 app.get('/bicycle/abandoned', async (req, res) => {
     console.log("get /bicycle/abandoned called");
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
+    const key = "";
+    const value = "";
 
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("bicycleCC");
-        result = await contract.evaluateTransaction('GetAbandoned');
-    } catch (error) {
-        result = `{"result":"fail","message":"query abandoned bicycle failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/bicycle/abandoned end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
+    let result_CC = await triggerCC(currentId, "GetAbandoned", key, value);
+    console.log(result_CC);
+    // result_CC = JSON.parse(result_CC);
+
+    if (result_CC.result == "fail") {
+        console.log(`GET /bicycle/history end --fail, ${result_CC}`);
+    } else {
+        console.log(`GET /bicycle/history end --success, ${result_CC}`);
     }
-    var obj = JSON.parse(result);
-    console.log(`get /bicycle/abandoned end --success, ${JSON.stringify(obj)}`);
-    res.status(200).send(obj);
+    // var obj = JSON.parse(result);
+    res.status(200).send(result_CC);
 });
 
 app.get('/bicycle/all', async (req, res) => {
     console.log("get /bicycle/all called");
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
+    const key = "";
+    const value = "";
 
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("bicycleCC");
-        result = await contract.evaluateTransaction('GetAll');
-    } catch (error) {
-        result = `{"result":"fail","message":"query all bicycle failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/bicycle/all end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
+    let result_CC = await triggerCC(currentId, "GetAll", key, value);
+    // result_CC = JSON.parse(result_CC);
+
+    if (result_CC.result == "fail") {
+        console.log(`GET /bicycle/all end --fail, ${result_CC}`);
+    } else {
+        console.log(`GET /bicycle/all end --success, ${result_CC}`);
     }
-    var obj = JSON.parse(result);
-    console.log(`get /bicycle/all end --success, ${JSON.stringify(obj)}`);
-    res.status(200).send(obj);
+    res.status(200).send(result_CC);
 });
 
 // admin page routing -done

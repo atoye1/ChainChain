@@ -47,29 +47,6 @@ type HistoryQueryResult struct {
 	IsDelete  bool      `json:"isDelete"`
 }
 
-/*
-func (s *SmartContract) CreateTestData(ctx contractapi.TransactionContextInterface, key string) (*Bicycle, error) {
-	assetAsBytes, err := ctx.GetStub().GetState(key)
-	var TestData [5]Bicycle;
-	for i < len(TestDate) {
-		TestData[i++];
-	}
-
-	s.Set(ctx, key)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to read from SimpleAsset world state. %s", err.Error())
-	}
-
-	if assetAsBytes == nil {
-		return nil, fmt.Errorf("Asset Key %s does not exist", key)
-	}
-
-	asset := new(Bicycle)
-	_ = json.Unmarshal(assetAsBytes, asset)
-
-	return asset, nil
-}*/
-
 func (s *SmartContract) Get(ctx contractapi.TransactionContextInterface, bicycleId string) (*Bicycle, error) {
 	assetAsBytes, err := ctx.GetStub().GetState(bicycleId)
 
@@ -204,6 +181,28 @@ func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, key str
 		Location:  parsedValue.Location,
 		Abandoned: parsedValue.Abandoned,
 	}
+	fmt.Println(bicycle)
+	assetAsBytes, _ := json.Marshal(bicycle)
+	return ctx.GetStub().PutState(key, assetAsBytes)
+}
+
+func (s *SmartContract) SetAbandoned(ctx contractapi.TransactionContextInterface, key string) error {
+	bicycle, err := s.Get(ctx, key)
+	if err != nil {
+		fmt.Printf("bicycle key %s not exists\n", key)
+	}
+	bicycle.Abandoned = "true"
+	fmt.Println(bicycle)
+	assetAsBytes, _ := json.Marshal(bicycle)
+	return ctx.GetStub().PutState(key, assetAsBytes)
+}
+
+func (s *SmartContract) SetResolved(ctx contractapi.TransactionContextInterface, key string) error {
+	bicycle, err := s.Get(ctx, key)
+	if err != nil {
+		fmt.Printf("bicycle key %s not exists\n", key)
+	}
+	bicycle.Abandoned = "false"
 	fmt.Println(bicycle)
 	assetAsBytes, _ := json.Marshal(bicycle)
 	return ctx.GetStub().PutState(key, assetAsBytes)
