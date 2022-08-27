@@ -27,10 +27,11 @@ function displayData(data, mode) {
         resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 px-lg-5 align-items-center"></div>');
         data.forEach(e => {
             let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
+            let imagePath = e.Image === "" ? "no_image_available.jpeg" : e.Image;
             $("#cardsContainer").append(
                 `<div class="col mb-4 mx-3">
                     <div class="card" style="background-color:${bgColor}">
-                        <img src="../static/img/${e.Image}" style="height:45vh" class="img-thumbnail img-fluid card-img-top" alt="...">
+                        <img src="../static/img/${imagePath}" style="height:45vh" class="img-thumbnail img-fluid card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title"><i class="fa-solid fa-key"> Bicycle ID</i><span style="display:inline-block; width:95%; text-align:right;">${e.Key}</span></h5>
                             <hr>
@@ -46,11 +47,12 @@ function displayData(data, mode) {
     } else if (mode === "GetAll") {
         resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 px-lg-5"></div>');
         data.forEach(e => {
+            let imagePath = e.Image === "" ? "no_image_available.jpeg" : e.Image;
             let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
             $("#cardsContainer").append(
                 `<div class="col mb-4 mx-3">
                     <div class="card" style="background-color:${bgColor}">
-                        <img src="../static/img/${e.Image}" style="height:45vh" class="img-thumbnail img-fluid card-img-top h-330" alt="...">
+                        <img src="../static/img/${imagePath}" style="height:45vh" class="img-thumbnail img-fluid card-img-top h-330" alt="...">
                         <div class="card-body">
                             <h5 class="card-title"><i class="fa-solid fa-key"> Bicycle ID</i><span style="display:inline-block; width:95%; text-align:right;">${e.Key}</span></h5>
                             <hr>
@@ -98,29 +100,34 @@ $("#companyName").change(() => {
 
 // Event Listeners using jquery Syntax
 $("#registerBtn").click(async () => {
-    const ownerId = $("#ownerId").val();
-    const bicycleId = $("#bicycleId").val();
-    const companyName = $("#companyName").val();
-    const modelName = $("#modelName").val();
-    const colour = $("#colour").val();
-    const bicycleImg = $("#bicycleImg").val();
-    const textComment = $("#textComment").val();
+    const Owner = $("#ownerId").val();
+    const Key = $("#bicycleId").val();
+    const Company = $("#companyName").val();
+    const Model = $("#modelName").val();
+    const Colour = $("#colour").val();
+    const Image = "";// $("#bicycleImg").val();
+    const Comment = $("#comment").val();
+    const Location = $("#location").val();
+    const Abandoned = "false";
     // TODO : SERVER API CONNECTION
 
     await $.post('/bicycle', {
-        bicycleId: bicycleId,
-        ownerId: ownerId,
-        companyName: companyName,
-        modelName: modelName,
-        colour: colour,
-        bicycleImg: bicycleImg,
-        textComment: textComment,
+        Key: Key,
+        Owner: Owner,
+        Company: Company,
+        Model: Model,
+        Colour: Colour,
+        Image: Image,
+        Comment: Comment,
+        Location: Location,
+        Abandoned: Abandoned,
     }, (data, status) => {
         console.log("post to /bicycle successful");
         console.log(status);
         console.log(data);
         displayData(data, "Set");
     });
+
     $("#registerModal").modal('toggle');
     console.log("registerBtn Clicked");
 });

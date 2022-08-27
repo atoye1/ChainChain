@@ -37,8 +37,16 @@
             <input type="text" class="form-control" id="colour">
           </div>
           <div class="mb-3">
+            <label for="companyName" class="col-form-label">위치 정보</label>
+            <select class="form-select" aria-label="company-select" id="location">
+              <option selected>위치를 선택하세요</option>
+              <option value="Seoul">Seoul</option>
+              <option value="Busan">Busan</option>
+            </select>
+          </div>
+          <div class="mb-3">
             <label for="bicycleImg" class="col-form-label">사진</label>
-            <input id="bicycleImg" class="form-control" type="file" onchange="readURL(this);" class="form-control border-0">
+            <input id="bicycleImg" class="form-control" type="file" name="bicycleImage" class="form-control border-0">
           </div>
           <div class="mb-3">
             <label for="textComment" class="col-form-label">기타 정보(100자 이내)</label>

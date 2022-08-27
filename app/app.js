@@ -3,8 +3,17 @@
 // Import Modules
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
+const multer = require('multer');
 const port = "6000";
+const storage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, './static/img');
+    },
+    filename: (req, file, callback) => {
+        callback(null, file.fieldname + '-' + Date.now());
+    }
+});
+const upload = multer({ storage: storage }).single('bicyclePhoto');
 
 let serveIndex = require('serve-index');
 
@@ -80,13 +89,10 @@ app.post('/bicycle', async (req, res) => {
     console.log("POST /bicycle trigger");
 
     let result;
-    const key = req.body.bicycleId;
-    delete req.body.bicycleId;
+    const key = req.body.Key;
     const value = JSON.stringify(req.body);
     console.log("printing key and value for chaincode", key, value);
-
     const gateway = new Gateway();
-
     try {
         const wallet = await buildWallet(Wallets, walletPath);
 

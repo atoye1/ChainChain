@@ -36,11 +36,11 @@ createData "${fcn_call}"
 
 
 # Abandoned Bicycle Test Data
-fcn_call='{"Args":["Set", "GMD1", "{\"Owner\":\"BadGiantUser\", \"Company\":\"Giant\", \"Model\":\"Giant.MTB\", \"Colour\":\"green\", \"Image\":\"abandoned1.jpeg\", \"Comment\":\"fakeComment\", \"Location\":\"busan\", \"Abandoned\":\"true\"}"]}'
+fcn_call='{"Args":["Set", "GM_A1", "{\"Owner\":\"BadGiantUser\", \"Company\":\"Giant\", \"Model\":\"Giant.MTB\", \"Colour\":\"green\", \"Image\":\"abandoned1.jpeg\", \"Comment\":\"fakeComment\", \"Location\":\"busan\", \"Abandoned\":\"true\"}"]}'
 createData "${fcn_call}"
 
-fcn_call='{"Args":["Set", "MCD1", "{\"Owner\":\"BadMeridaUser\", \"Company\":\"Merida\", \"Model\":\"Merida.Cycle\", \"Colour\":\"white\", \"Image\":\"abandoned2.jpeg\", \"Comment\":\"fakeComment\", \"Location\":\"seoul\", \"Abandoned\":\"true\"}"]}'
+fcn_call='{"Args":["Set", "MC_A1", "{\"Owner\":\"BadMeridaUser\", \"Company\":\"Merida\", \"Model\":\"Merida.Cycle\", \"Colour\":\"white\", \"Image\":\"abandoned2.jpeg\", \"Comment\":\"fakeComment\", \"Location\":\"seoul\", \"Abandoned\":\"true\"}"]}'
 createData "${fcn_call}"
 
-fcn_call='{"Args":["Set", "CHD1", "{\"Owner\":\"BadCelloUser\", \"Company\":\"Cello\", \"Model\":\"Cello.Hybrid\", \"Colour\":\"black\", \"Image\":\"abandoned3.jpeg\", \"Comment\":\"fakeComment\", \"Location\":\"busan\", \"Abandoned\":\"true\"}"]}'
+fcn_call='{"Args":["Set", "CH_A1", "{\"Owner\":\"BadCelloUser\", \"Company\":\"Cello\", \"Model\":\"Cello.Hybrid\", \"Colour\":\"black\", \"Image\":\"abandoned3.jpeg\", \"Comment\":\"fakeComment\", \"Location\":\"busan\", \"Abandoned\":\"true\"}"]}'
 createData "${fcn_call}"
