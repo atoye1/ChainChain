@@ -2,43 +2,35 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">자전거 상태변경</h5>
+        <h5 class="modal-title" id="exampleModalLabel">자전거 신고</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form>
           <div class="mb-3">
-            <label for="bicycleIdQuery" class="col-form-label">BicycleID</label>
-            <input type="text" class="form-control" id="bicycleIdQuery">
+            <label for="bicycleIdQuery" class="col-form-label">BicycleIDForChange</label>
+            <input type="text" class="form-control" id="bicycleIdForChange">
           </div>
           <div class="mb-3">
-            <label for="" class="col-form-label">변경모드</label>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-              <label class="form-check-label" for="exampleRadios1">
-                방치 상태 변경
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-              <label class="form-check-label" for="exampleRadios2">
-                소유권 이전
-              </label>
-            </div>
+            <label for="companyName" class="col-form-label">신고 모드</label>
+            <select class="form-select" aria-label="company-select" id="reportMode">
+              <option selected value="Report">Report Abandoned Bicycle</option>
+              <option value="Resolve">Resolve Abandoned Bicycle</option>
+            </select>
           </div>
           <div class="mb-3">
-            <label for="message-text" class="col-form-label">From</label>
-            <input type="text" class="form-control" id="message-text"></input>
+            <label for="message-text" class="col-form-label" disabled>From(추후 구현 예정)</label>
+            <input type="text" class="form-control" id="message-text" disabled></input>
           </div>
           <div class="mb-3">
-            <label for="message-text" class="col-form-label">To</label>
-            <input type="text" class="form-control" id="message-text"></input>
+            <label for="message-text" class="col-form-label">To(추후 구현 예정)</label>
+            <input type="text" class="form-control" id="message-text" disabled></input>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button id="changeBtn" type="button" class="btn btn-primary">상태 변경</button>
+        <button id="reportBtn" type="button" class="btn btn-primary">상태 변경 신고</button>
       </div>
     </div>
   </div>

@@ -3,17 +3,7 @@
 // Import Modules
 const express = require('express');
 const path = require('path');
-const multer = require('multer');
 const port = "6000";
-const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, './static/img');
-    },
-    filename: (req, file, callback) => {
-        callback(null, file.fieldname + '-' + Date.now());
-    }
-});
-const upload = multer({ storage: storage }).single('bicyclePhoto');
 
 let serveIndex = require('serve-index');
 
@@ -86,7 +76,7 @@ app.get('/bicycle', async (req, res) => {
 });
 
 app.post('/bicycle', async (req, res) => {
-    console.log("POST /bicycle trigger");
+    console.log("POST /bicycle triggered");
 
     let result;
     const key = req.body.Key;
@@ -120,6 +110,37 @@ app.post('/bicycle', async (req, res) => {
     console.log(`post /bicycle end --success`);
     var obj = JSON.parse(result);
     res.status(200).send(obj);
+});
+
+app.post('/bicycle/state', async (req, res) => {
+    console.log("POST /bicycle/state triggered");
+    let result;
+    const key = req.body.Key;
+    const value = JSON.stringify(req.body);
+    console.log("printing key and value for chaincode", key, value);
+    const gateway = new Gateway();
+    try {
+        const wallet = await buildWallet(Wallets, walletPath);
+
+        await gateway.connect(ccp, {
+            wallet,
+            identity: currentId,
+            discovery: { enabled: true, asLocalhost: true }
+        });
+        const network = await gateway.getNetwork(CH_NAME);
+        const contract = network.getContract(CC_NAME);
+        result = await contract.submitTransaction('Set', Key);
+
+    } catch (error) {
+        let result = `{"result":"failed","message":"query bicycle failed"}`;
+        var obj = JSON.parse(result);
+        console.log("/process/create end -- failed", error);
+        res.status(200).send(obj);
+        return;
+    } finally {
+        gateway.disconnect();
+    }
+
 });
 
 app.get('/bicycle/history', async (req, res) => {

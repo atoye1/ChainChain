@@ -24,7 +24,7 @@ function displayData(data, mode) {
     } else if (mode === "login") {
         resultSection.append('<h1>' + "login mode" + '</h1>');
     } else if (mode === "GetAbandoned") {
-        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 px-lg-5 align-items-center"></div>');
+        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 px-lg-5 justify-content-center"></div>');
         data.forEach(e => {
             let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
             let imagePath = e.Image === "" ? "no_image_available.jpeg" : e.Image;
@@ -45,7 +45,7 @@ function displayData(data, mode) {
                 </div>`);
         });
     } else if (mode === "GetAll") {
-        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 px-lg-5"></div>');
+        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 px-lg-5 justify-content-center"></div>');
         data.forEach(e => {
             let imagePath = e.Image === "" ? "no_image_available.jpeg" : e.Image;
             let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
@@ -186,29 +186,36 @@ $("#loginBtn").click(async () => {
     $("#loginModal").modal('toggle');
 });
 
-
 // Deserted Query : 방치된 자전거들 조회
-$("#queryAbandonedMenu").click(async () => {
-    $.get('/bicycle/abandoned', {}, (data, status) => {
-        console.log(data, status);
-        displayData(data, "GetAbandoned");
-    });
-    // TODO: folding unfolded menu 
-});
 $("#queryAbandonedBtn").click(async () => {
     $.get('/bicycle/abandoned', {}, (data, status) => {
         console.log(data, status);
         displayData(data, "GetAbandoned");
     });
+    $("#closeQueryModal").click();
 });
 
-$("#queryAllMenu").click(async () => {
+$("#queryAllBtn").click(async () => {
     $.get('/bicycle/all', {}, (data, status) => {
         console.log(data, status);
         displayData(data, "GetAll");
     });
+    $("#closeQueryModal").click();
 });
 
+$("#reportBtn").click(async () => {
+    const Key = $("#bicycleIdForChange").val();
+    const Mode = $("#reportMode").val();;
+    console.log("post to /bicycle/state successful");
+    await $.post('/bicycle/state', {
+        Key: Key,
+        Mode: Mode,
+    }, (data, status) => {
+        console.log("post to /bicycle/state successful");
+        displayData(data, "SetState");
+    });
+    $("#changeModal").modal('toggle');
+});
 
 signupBtn.click(() => {
 
