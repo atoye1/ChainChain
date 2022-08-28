@@ -23,15 +23,16 @@ type User struct {
 }
 
 type Bicycle struct {
-	Key       string `json:"Key"`
-	Owner     string `json:"Owner"` // temporarily set to string want to refer User sturct
-	Company   string `json:"Company"`
-	Model     string `json:"Model"`
-	Colour    string `json:"Colour"`
-	Image     string `json:"Image"`
-	Comment   string `json:"Comment"`
-	Location  string `json:"Location"`
-	Abandoned string `json:"Abandoned"`
+	Key         string `json:"Key"`
+	Owner       string `json:"Owner"`
+	Company     string `json:"Company"`
+	Model       string `json:"Model"`
+	Colour      string `json:"Colour"`
+	Image       string `json:"Image"`
+	Comment     string `json:"Comment"`
+	Location    string `json:"Location"`
+	Abandoned   string `json:"Abandoned"`
+	Surrendered string `json:"Surrendered"`
 }
 
 type RangedQueryResult struct {
@@ -171,15 +172,16 @@ func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, key str
 	json.Unmarshal([]byte(value), &parsedValue)
 
 	bicycle := Bicycle{
-		Key:       key,
-		Owner:     parsedValue.Owner,
-		Company:   parsedValue.Company,
-		Model:     parsedValue.Model,
-		Colour:    parsedValue.Colour,
-		Image:     parsedValue.Image,
-		Comment:   parsedValue.Comment,
-		Location:  parsedValue.Location,
-		Abandoned: parsedValue.Abandoned,
+		Key:         key,
+		Owner:       parsedValue.Owner,
+		Company:     parsedValue.Company,
+		Model:       parsedValue.Model,
+		Colour:      parsedValue.Colour,
+		Image:       parsedValue.Image,
+		Comment:     parsedValue.Comment,
+		Location:    parsedValue.Location,
+		Abandoned:   parsedValue.Abandoned,
+		Surrendered: parsedValue.Surrendered,
 	}
 	fmt.Println(bicycle)
 	assetAsBytes, _ := json.Marshal(bicycle)
@@ -203,6 +205,22 @@ func (s *SmartContract) SetResolved(ctx contractapi.TransactionContextInterface,
 		fmt.Printf("bicycle key %s not exists\n", key)
 	}
 	bicycle.Abandoned = "false"
+	fmt.Println(bicycle)
+	assetAsBytes, _ := json.Marshal(bicycle)
+	return ctx.GetStub().PutState(key, assetAsBytes)
+}
+
+func (s *SmartContract) Transfer(ctx contractapi.TransactionContextInterface, key string, newOwner string) error {
+	bicycle, err := s.Get(ctx, key)
+	if err != nil {
+		fmt.Printf("bicycle key %s not exists\n", key)
+	}
+	if bicycle.Surrendered == "false" {
+		fmt.Printf("bicycle key %s is not in surrendered state, cannot transfer ownership", key)
+	}
+	bicycle.Abandoned = "false"
+	bicycle.Surrendered = "false"
+	bicycle.Owner = newOwner
 	fmt.Println(bicycle)
 	assetAsBytes, _ := json.Marshal(bicycle)
 	return ctx.GetStub().PutState(key, assetAsBytes)

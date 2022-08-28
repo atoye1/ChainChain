@@ -15,12 +15,16 @@ function displayData(data, mode) {
     resultSection.removeClass("d-none");
     if (mode === "Set") {
         resultSection.append('<h1>' + "register mode" + '</h1>');
+        resultSection.append('<h1>' + JSON.stringify(data) + '</h1>');
+        console.log("set mode result");
     } else if (mode === "Get") {
         resultSection.append('<h1>' + "Query mode" + '</h1>');
+        resultSection.append('<h1>' + JSON.stringify(data) + '</h1>');
     } else if (mode === "History") {
         console.log("------배열데이터------");
         console.log(data);
         resultSection.append('<h1>' + "Query History mode" + '</h1>');
+        resultSection.append('<h1>' + JSON.stringify(data) + '</h1>');
     } else if (mode === "login") {
         resultSection.append('<h1>' + "login mode" + '</h1>');
     } else if (mode === "GetAbandoned") {
@@ -45,7 +49,7 @@ function displayData(data, mode) {
                 </div>`);
         });
     } else if (mode === "GetAll") {
-        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 px-lg-5 justify-content-left"></div>');
+        resultSection.append('<div id="cardsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 px-lg-5 justify-content-center"><hdiv>');
         data.forEach(e => {
             let imagePath = e.Image === "" ? "no_image_available.jpeg" : e.Image;
             let bgColor = e.Abandoned === "true" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
@@ -66,10 +70,10 @@ function displayData(data, mode) {
                 </div>`);
         });
     }
-    if (data) {
-        resultSection.append('<h4>' + "Displaying Data for Debugging" + '</h4>');
-        resultSection.append('<p>' + JSON.stringify(data) + '</p>');
-    }
+    // if (data) {
+    //     resultSection.append('<h4>' + "Displaying Data for Debugging" + '</h4>');
+    //     resultSection.append('<p>' + JSON.stringify(data) + '</p>');
+    // }
 }
 
 function checkLogin() {
@@ -110,6 +114,7 @@ $("#registerBtn").click(async () => {
     const Comment = $("#comment").val();
     const Location = $("#location").val();
     const Abandoned = "false";
+    const Surrendered = "false";
     // TODO : SERVER API CONNECTION
 
     await $.post('/bicycle', {
@@ -122,6 +127,7 @@ $("#registerBtn").click(async () => {
         Comment: Comment,
         Location: Location,
         Abandoned: Abandoned,
+        Surrendered: Abandoned,
     }, (data, status) => {
         console.log("post to /bicycle successful");
         console.log(status);
@@ -248,11 +254,11 @@ $("#createUserWallet").click(async () => {
 $(document).on({
     ajaxStart: function () {
         console.log("ajaxStart");
-        $("#loading_modal").modal('show');
+        $('#cover-spin').show(0);
     },
     ajaxStop: function () {
         console.log("ajaxEnd");
-        $("#loading_modal").modal('hide');
+        $('#cover-spin').show(1);
     }
 });
 

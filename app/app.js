@@ -92,29 +92,25 @@ app.post('/bicycle/state', async (req, res) => {
         console.log(`POST /bicycle end --success, ${result_CC}`);
     }
     res.status(200).send(result_CC);
-    // const gateway = new Gateway();
-    // try {
-    //     const wallet = await buildWallet(Wallets, walletPath);
-
-    //     await gateway.connect(ccp, {
-    //         wallet,
-    //         identity: currentId,
-    //         discovery: { enabled: true, asLocalhost: true }
-    //     });
-    //     const network = await gateway.getNetwork(CH_NAME);
-    //     const contract = network.getContract(CC_NAME);
-    //     result = await contract.submitTransaction('Set', Key);
-
-    // } catch (error) {
-    //     let result = `{"result":"failed","message":"query bicycle failed"}`;
-    //     var obj = JSON.parse(result);
-    //     console.log("/process/create end -- failed", error);
-    //     res.status(200).send(obj);
-    //     return;
-    // } finally {
-    //     gateway.disconnect();
-    // }
 });
+
+app.get('/bicycle/transfer', async (req, res) => {
+    console.log("POST /bicycle/transfer triggered");
+    const key = req.body.Key;
+    const newOwner = req.body.NewOwner;
+    console.log(key, newOwner);
+    let result_CC = await triggerCC(currentId, "Transfer", key, newOwner);
+    result_CC = JSON.parse(result_CC);
+
+    if (result_CC.result == "fail") {
+        console.log(`POST /bicycle/transfer end --fail, ${result_CC}`);
+    } else {
+        console.log(`POST /bicycle/transfer end --success, ${result_CC}`);
+    }
+    res.status(200).send(result_CC);
+});
+
+
 
 app.get('/bicycle/history', async (req, res) => {
     console.log("get /bicycle/history called");
@@ -289,247 +285,11 @@ app.post('/userWallet', async (req, res) => {
 });
 
 
-
-
-app.get('/process/userlist', async (req, res) => {
-    const walletPath = path.join(process.cwd(), "wallet");
-    const wallet = await Wallets.newFileSystemWallet(walletPath);
-    console.log(`Wallet path: ${walletPath}`);
-    try {
-        const walletData = await wallet.list();
-        const walletPrivoder = await wallet.getProviderRegistry();
-        console.log(walletPrivoder);
-        console.log(walletData);
-        const returnData = {
-            result: "success",
-            ids: walletData,
-        };
-        res.send(returnData);
-
-    } catch (error) {
-        res.send({
-            result: "Fail",
-            ids: null,
-        });
-    }
-});
-
-
-// called /process/create inside
-app.get('/create', (req, res) => {
-    res.render('create_template', (err, html) => {
-        res.end(html);
-    });
-});
-
-app.post('/process/create', async (req, res) => {
-    console.log('/process/create called');
-    console.log(req);
-
-    const key = req.body.key;
-    const value = req.body.value;
-
-    console.log(key, value);
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
-
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("simpleasset");
-        result = await contract.submitTransaction('Set', key, value);
-        // result 가 byte array라고 생각하고
-    } catch (error) {
-        result = `{"result":"fail", "message":"create asset Failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/create end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
-    }
-    console.log(result);
-    result = `{"result":"success", "message":"${result}"}`;
-    var obj = JSON.parse(result);
-    console.log("/process/create end - success");
-    res.status(200).send(obj);
-});
-
-
-
-app.get('/process/query', async (req, res) => {
-    console.log('/process/query called');
-    const key = req.query.key;
-    console.log(key);
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
-
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("simpleasset");
-        result = await contract.evaluateTransaction('Get', key);
-        // result 가 byte array라고 생각하고
-
-    } catch (error) {
-        result = `{"result":"fail", "message":"query asset Failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/create end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
-    }
-    result = `{"result":"success", "message":${result}}`;
-    console.log("/process/query  end -- success", result);
-    var obj = JSON.parse(result);
-    res.status(200).send(obj);
-});
-
-app.get('/transfer', async (req, res) => {
-    res.render('transfer_template', (err, html) => {
-        res.end(html);
-    });
-});
-
-app.post('/process/transfer', async (req, res) => {
-    const userid = req.body.userid;
-    const from = req.body.from;
-    const to = req.body.to;
-    const amount = req.body.amount;
-    console.log('/process/transfer called');
-    console.log(from, to, amount);
-
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
-
-        await gateway.connect(ccp, {
-            wallet,
-            identity: userid,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("simpleasset");
-        result = await contract.submitTransaction('Transfer', from, to, amount);
-        // result 가 byte array라고 생각하고
-    } catch (error) {
-        result = `{"result":"fail", "message":"transfer asset Failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/transfer end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
-    }
-
-    //console.log("DEBUG POINT");
-    //result = JSON.stringify(result);
-    //console.log(result);
-    result = `{"result":"success", "message":"${result}"}`;
-    console.log("/process/transfer end - success");
-    var obj = JSON.parse(result);
-    res.status(200).send(obj);
-});
-
 app.get('/history', (req, res) => {
     res.render('history_template', (err, html) => {
         res.end(html);
     });
 });
-
-app.get('/process/history', async (req, res) => {
-    console.log('/process/history called');
-    const key = req.query.key;
-    console.log(key);
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
-
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("simpleasset");
-        result = await contract.evaluateTransaction('History', key);
-        // result 가 byte array라고 생각하고
-
-    } catch (error) {
-        result = `{"result":"fail", "message":"History asset Failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/history end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
-    }
-    //console.log("before", result);
-    result = String.fromCharCode(...result);
-    //console.log('Bytes to string: ', bytesString);
-    result = `{"result":"success", "message":${result}}`;
-    console.log("after", result);
-    console.log("/process/history end -- success", result);
-    var obj = JSON.parse(result);
-    res.status(200).send(obj);
-});
-// /query called /process/query inside
-
-app.get('/queryAll', (req, res) => {
-    res.render('queryAll_template', (err, html) => {
-        res.end(html);
-    });
-});
-app.get('/process/queryAll', async (req, res) => {
-    console.log('/process/queryAll called');
-    const gateway = new Gateway();
-    let result;
-    try {
-        const wallet = await buildWallet(Wallets, walletPath);
-
-        await gateway.connect(ccp, {
-            wallet,
-            identity: currentId,
-            discovery: { enabled: true, asLocalhost: true }
-        });
-
-        const network = await gateway.getNetwork("mychannel");
-        const contract = network.getContract("simpleasset");
-        result = await contract.evaluateTransaction('GetKeyRange', key);
-        // result 가 byte array라고 생각하고
-
-    } catch (error) {
-        result = `{"result":"fail", "message":"Query All Failed"}`;
-        var obj = JSON.parse(result);
-        console.log("/process/queryAll end -- failed", error);
-        res.status(200).send(obj);
-        return;
-    } finally {
-        gateway.disconnect();
-    }
-    result = `{"result":"success", "message":${result}}`;
-    console.log("/asset get end -- success", result);
-    var obj = JSON.parse(result);
-    res.status(200).send(obj);
-});
-
 
 app.get('/', (req, res) => {
     console.log("index page called");

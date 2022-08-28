@@ -11,8 +11,11 @@
 
 <body class="d-flex flex-column h-100 bg-white py-5">
   <%- include("./navbar.ejs") %>
-  <div class="my-5 debug">
+  <!-- <div class="my-5 debug">
     <%- include("./debug.ejs") %>
+  </div> -->
+  <div class="cotainer d-block" style="height:60px">
+    <p></p>
   </div>
   <section>
     <div id="landing" class="w-md-70 h-100 m-3 p-3 m-md-5 p-md-5 text-center">
@@ -34,6 +37,7 @@
   <!-- <div id="loader" class="loader d-flex justify-content-center align-items-center"> -->
   <!-- Place at bottom of page -->
   <!-- </div> -->
+
   <div class="modals">
     <%- include("./modals/register_modal.ejs") %>
     <%- include("./modals/query_modal.ejs") %>
