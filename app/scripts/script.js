@@ -141,7 +141,9 @@ $("#registerBtn").click(async () => {
 });
 
 $("#queryBtn").click(() => {
-    $('.navbar-toggler').click();
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     const bicycleIdQuery = $("#bicycleIdQuery").val();
     let getData = {
         bicycleIdQuery: bicycleIdQuery
@@ -157,7 +159,10 @@ $("#queryBtn").click(() => {
 });
 
 $("#queryHistoryBtn").click(() => {
-    $('.navbar-toggler').click();
+
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     const bicycleIdQuery = $("#bicycleIdQuery").val();
     let getData = {
         bicycleIdQuery: bicycleIdQuery
@@ -171,6 +176,9 @@ $("#queryHistoryBtn").click(() => {
 });
 
 $("#queryMineBtn").click(() => {
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     $('.navbar-toggler').click();
     let getData = {};
     $.get(apiStubAddr, getData, (data, status) => {
@@ -181,6 +189,9 @@ $("#queryMineBtn").click(() => {
 });
 
 $("#loginBtn").click(async () => {
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     $('.navbar-toggler').click();
     const loginId = $("#loginId").val();
     const loginPw = $("#loginPw").val();
@@ -200,16 +211,29 @@ $("#loginBtn").click(async () => {
 
 // Deserted Query : 방치된 자전거들 조회
 $("#queryAbandonedBtn").click(async () => {
-    $('.navbar-toggler').click();
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     $.get('/bicycle/abandoned', {}, (data, status) => {
         console.log(data, status);
         displayData(data, "GetAbandoned");
     });
     $("#closeQueryModal").click();
 });
-
+$("#queryAbandonedBtnMain").click(async () => {
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
+    $.get('/bicycle/abandoned', {}, (data, status) => {
+        console.log(data, status);
+        displayData(data, "GetAbandoned");
+    });
+    $("#closeQueryModal").click();
+});
 $("#queryAllBtn").click(async () => {
-    $('.navbar-toggler').click();
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     $.get('/bicycle/all', {}, (data, status) => {
         console.log(data, status);
         displayData(data, "GetAll");
@@ -218,7 +242,9 @@ $("#queryAllBtn").click(async () => {
 });
 
 $("#reportBtn").click(async () => {
-    $('.navbar-toggler').click();
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     const Key = $("#bicycleIdForChange").val();
     const Mode = $("#reportMode").val();;
     console.log(Mode);
@@ -234,7 +260,9 @@ $("#reportBtn").click(async () => {
 });
 
 $("#logoutMenu").click(() => {
-    $('.navbar-toggler').click();
+    if ($("#navbarCollapse").hasClass('show')) {
+        $('.navbar-toggler').click();
+    }
     loggedIn = false;
     checkLogin();
 });
