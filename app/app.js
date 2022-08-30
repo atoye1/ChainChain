@@ -28,14 +28,12 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 const currentId = 'admin';
 
+// express settings
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, '/')));
 app.use(express.static(__dirname + "/"));
 app.use('/static', serveIndex(__dirname + '/'));
-
-// main page routing -done
-
 
 app.get('/bicycle', async (req, res) => {
     console.log("get /bicycle called");
@@ -162,18 +160,6 @@ app.get('/bicycle/all', async (req, res) => {
     res.status(200).send(result_CC);
 });
 
-// admin page routing -done
-app.get('/admin', (req, res) => {
-    res.render('admin-wallet', (err, html) => {
-        res.end(html);
-    });
-});
-// user page routing - done
-app.get('/user', (req, res) => {
-    res.render('user-wallet', (err, html) => {
-        res.end(html);
-    });
-});
 
 // Create adminWallet
 app.post('/adminWallet', async (req, res) => {
@@ -278,16 +264,9 @@ app.post('/userWallet', async (req, res) => {
     } catch (error) {
         console.error(`Failed to enroll normal user ${id}`);
         res.send(error);
-        //res.json(JSON.parse(res_str));
     }
 });
 
-
-app.get('/history', (req, res) => {
-    res.render('history_template', (err, html) => {
-        res.end(html);
-    });
-});
 
 app.get('/', (req, res) => {
     console.log("index page called");
