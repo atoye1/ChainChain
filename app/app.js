@@ -14,12 +14,10 @@ const { Gateway, Wallets } = require("fabric-network");
 const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
 const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
 const mspOrg1 = 'Org1MSP';
-// const ccp = buildCCPOrg1();
-// const caClient = buildCAClient(FabricCaServices, ccp, 'ca.org1.example.com');
+
 const walletPath = path.join(__dirname, 'wallet');
 
 const triggerCC = require('./ChaincodeUtils.js').triggerCC;
-// Fabric settings done
 
 // Get express object
 let app = express();
