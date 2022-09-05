@@ -1,11 +1,6 @@
 const { body, validationResult } = require("express-validator");
-// const triggerCC = require("../ChaincodeUtils.js");
-const triggerCC = (a, b, c, d) => {
-    console.log("triger CC stub func called");
-    //stub
-    return { "result": "success" };
-};
-const currentId = "testid";
+const triggerCC = require("../ChaincodeUtils.js");
+const currentId = "admin";
 
 exports.bicycles_get = async (req, res, next) => {
     const abandoned = req.query.abandoned;
