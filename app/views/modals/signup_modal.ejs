@@ -3,7 +3,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">회원가입</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button id="closeSignupModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form>
@@ -13,7 +13,7 @@
           </div>
           <div class="mb-3">
             <label for="signupPw" class="col-form-label">PW</label>
-            <input type="text" class="form-control" id="signupPw">
+            <input type="password" class="form-control" id="signupPw">
           </div>
           <div class="mb-3">
             <label for="signupName" class="col-form-label">Name</label>
@@ -22,11 +22,10 @@
           <div class="mb-3">
             <label for="signupRole" class="col-form-label">Role</label>
             <select class="form-select" aria-label="company-select" id="signupRole">
-              <option selected>사용자 역할을 선택하세요 - 기본값 BicycleOwner</option>
-              <option value="BicycleOwner">BicycleOwner</option>
-              <option value="GarbageCollector">GarbageCollector</option>
-              <option value="GarbageDisposer">GarbageDisposer</option>
-              <option value="Admin">Admin</option>
+              <option value="client">client</option>
+              <option value="admin">admin</option>
+              <!-- <option value="GarbageDisposer">GarbageDisposer</option>
+              <option value="Admin">Admin</option> -->
             </select>
           </div>
         </form>

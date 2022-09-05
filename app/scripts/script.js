@@ -1,7 +1,7 @@
 let loggedIn = false;
 
 // define simple util functions
-function navbarHandler() {
+function navbarHider() {
     if ($("#navbarCollapse").hasClass('show')) {
         $('.navbar-toggler').click();
     }
@@ -121,14 +121,25 @@ $("#logoutMenu").click(() => {
 });
 
 
-$("#createUserWallet").click(async () => {
-    let postData = {};
-    await $.post('/userWallet', postData, (data, status) => {
+$("#signupBtn").click(async () => {
+    const signupId = $("#signupId").val();
+    const signupPw = $("#signupPw").val();
+    const signupRole = $("#signupRole").val();
+    let postData = {
+        signupId,
+        signupPw,
+        signupRole
+    };
+    console.log(postData);
+    await $.post('/users', postData, (data, status) => {
         console.log(status);
         console.log(data);
         $("#debugResult").empty();
         $("#debugResult").append("<p>" + JSON.stringify(data) + "</p>");
     });
+    navbarHider();
+    $("#closeSignupModal").click();
+
 });
 
 // show loading wheel when ajaxing

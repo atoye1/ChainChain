@@ -5,16 +5,6 @@ const express = require('express');
 const path = require('path');
 const serveIndex = require('serve-index');
 
-// Import Fabric Modules
-
-// const FabricCaServices = require("fabric-ca-client");
-// const { Gateway, Wallets } = require("fabric-network");
-// const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
-// const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
-// const mspOrg1 = 'Org1MSP';
-// const walletPath = path.join(__dirname, 'wallet');
-// const triggerCC = require("./ChaincodeUtils.js");
-
 // Import routers
 
 const indexRouter = require('./routes/index');
