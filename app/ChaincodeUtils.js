@@ -48,4 +48,4 @@ async function triggerCC(id, transaction, key, value) {
     return result;
 };
 
-exports.triggerCC = triggerCC;
+module.exports = triggerCC;

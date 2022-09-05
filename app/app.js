@@ -3,7 +3,7 @@
 // Import Modules
 const express = require('express');
 const path = require('path');
-const port = "6000";
+const port = "3000";
 
 let serveIndex = require('serve-index');
 
@@ -17,7 +17,7 @@ const mspOrg1 = 'Org1MSP';
 
 const walletPath = path.join(__dirname, 'wallet');
 
-const triggerCC = require('./ChaincodeUtils.js').triggerCC;
+const triggerCC = require("./ChaincodeUtils.js");
 
 // Get express object
 let app = express();
