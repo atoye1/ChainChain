@@ -22,7 +22,10 @@ exports.bicycles_post = async (req, res, next) => {
     console.log("POST /bicycles triggered");
     const key = req.body.Key;
     const value = JSON.stringify(req.body);
-
+    console.log(req.body);
+    console.log(value);
+    console.log(req.files);
+    return;
     let result_CC = await triggerCC(currentId, "Set", key, value);
     let successFlag = result_CC.result == "fail" ? "fail" : "success";
     console.log(`POST /bicycles end --${successFlag}, ${result_CC}`);

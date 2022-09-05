@@ -35,18 +35,26 @@ $("#companyName").change(() => {
 
 // Event Listeners using jquery Syntax
 $("#registerBtn").click(async () => {
-    $('.navbar-toggler').click();
     const Owner = $("#ownerId").val();
     const Key = $("#bicycleId").val();
     const Company = $("#companyName").val();
     const Model = $("#modelName").val();
     const Colour = $("#colour").val();
-    const Image = "";// $("#bicycleImg").val();
+    const ImageFile = await document.getElementById("bicycleImg").files[0];
     const Comment = $("#comment").val();
     const Location = $("#location").val();
     const Abandoned = "false";
     const Surrendered = "false";
-    // TODO : SERVER API CONNECTION
+    let ImageFileBinary;
+    if (ImageFile) {
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(ImageFile);
+        reader.onload = (event) => {
+            console.log("event", event);
+            ImageFileBinary = event.target.result;
+            console.log("result", ImageFileBinary);
+        };
+    }
 
     await $.post('/bicycles', {
         Key: Key,
@@ -54,7 +62,8 @@ $("#registerBtn").click(async () => {
         Company: Company,
         Model: Model,
         Colour: Colour,
-        Image: Image,
+        ImageTitle: ImageFile.name,
+        ImageFileBinary: ImageFileBinary,
         Comment: Comment,
         Location: Location,
         Abandoned: Abandoned,
@@ -66,6 +75,7 @@ $("#registerBtn").click(async () => {
         displayData(data, "Set");
     });
 
+    navbarHider();
     $("#registerModal").modal('toggle');
 
     console.log("registerBtn Clicked");
