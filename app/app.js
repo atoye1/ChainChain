@@ -1,32 +1,35 @@
 'use strict';
 
-// Import Modules
+// Import General Modules
 const express = require('express');
 const path = require('path');
-const port = "3000";
-
-let serveIndex = require('serve-index');
+const serveIndex = require('serve-index');
 
 // Import Fabric Modules
 
-const FabricCaServices = require("fabric-ca-client");
-const { Gateway, Wallets } = require("fabric-network");
-const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
-const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
-const mspOrg1 = 'Org1MSP';
+// const FabricCaServices = require("fabric-ca-client");
+// const { Gateway, Wallets } = require("fabric-network");
+// const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
+// const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
+// const mspOrg1 = 'Org1MSP';
+// const walletPath = path.join(__dirname, 'wallet');
+// const triggerCC = require("./ChaincodeUtils.js");
 
-const walletPath = path.join(__dirname, 'wallet');
+// Import routers
 
-const triggerCC = require("./ChaincodeUtils.js");
+const indexRouter = require('./routes/index');
+const bicycleRouter = require('./routes/bicycles');
+const userRouter = require('./routes/users');
 
 // Get express object
 let app = express();
 
 // Set envs
+const port = "3000";
+const currentId = 'admin';
 app.set('port', port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-const currentId = 'admin';
 
 // express settings
 app.use(express.urlencoded({ extended: false }));
@@ -35,130 +38,10 @@ app.use('/static', express.static(path.join(__dirname, '/')));
 app.use(express.static(__dirname + "/"));
 app.use('/static', serveIndex(__dirname + '/'));
 
-app.get('/bicycle', async (req, res) => {
-    console.log("get /bicycle called");
-    const key = req.query.bicycleIdQuery;
-    const value = "";
-    console.log(key);
-
-    let result_CC = await triggerCC(currentId, "Get", key, value);
-    console.log(result_CC);
-    // result_CC = JSON.parse(result_CC);
-
-    if (result_CC.result == "fail") {
-        console.log(`GET /bicycle end --fail, ${result_CC}`);
-    } else {
-        console.log(`GET /bicycle end --success, ${result_CC}`);
-    }
-    // var obj = JSON.parse(result);
-    res.status(200).send(result_CC);
-});
-
-app.post('/bicycle', async (req, res) => {
-    console.log("POST /bicycle triggered");
-    const key = req.body.Key;
-    const value = JSON.stringify(req.body);
-
-    let result_CC = await triggerCC(currentId, "Set", key, value);
-
-    if (result_CC.result == "fail") {
-        console.log(`POST /bicycle end --fail, ${result_CC}`);
-    } else {
-        console.log(`POST /bicycle end --success, ${result_CC}`);
-    }
-    res.status(200).send(result_CC);
-});
-
-app.post('/bicycle/state', async (req, res) => {
-    console.log("POST /bicycle/state triggered");
-    const key = req.body.Key;
-    const mode = req.body.Mode;
-    const value = "";
-    console.log(mode);
-    if (mode == "Report") {
-        let result_CC = await triggerCC(currentId, "SetAbandoned", key, value);
-    } else {
-        let result_CC = await triggerCC(currentId, "SetResolved", key, value);
-    }
-    result_CC = JSON.parse(result_CC);
-
-    if (result_CC.result == "fail") {
-        console.log(`POST /bicycle end --fail, ${result_CC}`);
-    } else {
-        console.log(`POST /bicycle end --success, ${result_CC}`);
-    }
-    res.status(200).send(result_CC);
-});
-
-app.get('/bicycle/transfer', async (req, res) => {
-    console.log("POST /bicycle/transfer triggered");
-    const key = req.body.Key;
-    const newOwner = req.body.NewOwner;
-    console.log(key, newOwner);
-    let result_CC = await triggerCC(currentId, "Transfer", key, newOwner);
-    result_CC = JSON.parse(result_CC);
-
-    if (result_CC.result == "fail") {
-        console.log(`POST /bicycle/transfer end --fail, ${result_CC}`);
-    } else {
-        console.log(`POST /bicycle/transfer end --success, ${result_CC}`);
-    }
-    res.status(200).send(result_CC);
-});
-
-
-
-app.get('/bicycle/history', async (req, res) => {
-    console.log("get /bicycle/history called");
-    const key = req.query.bicycleIdQuery;
-    const value = "";
-
-    let result_CC = await triggerCC(currentId, "History", key, value);
-    console.log(result_CC);
-    // result_CC = JSON.parse(result_CC);
-
-    if (result_CC.result == "fail") {
-        console.log(`GET /bicycle/history end --fail, ${result_CC}`);
-    } else {
-        console.log(`GET /bicycle/history end --success, ${result_CC}`);
-    }
-    // var obj = JSON.parse(result);
-    res.status(200).send(result_CC);
-});
-
-app.get('/bicycle/abandoned', async (req, res) => {
-    console.log("get /bicycle/abandoned called");
-    const key = "";
-    const value = "";
-
-    let result_CC = await triggerCC(currentId, "GetAbandoned", key, value);
-    console.log(result_CC);
-    // result_CC = JSON.parse(result_CC);
-
-    if (result_CC.result == "fail") {
-        console.log(`GET /bicycle/history end --fail, ${result_CC}`);
-    } else {
-        console.log(`GET /bicycle/history end --success, ${result_CC}`);
-    }
-    // var obj = JSON.parse(result);
-    res.status(200).send(result_CC);
-});
-
-app.get('/bicycle/all', async (req, res) => {
-    console.log("get /bicycle/all called");
-    const key = "";
-    const value = "";
-
-    let result_CC = await triggerCC(currentId, "GetAll", key, value);
-    // result_CC = JSON.parse(result_CC);
-
-    if (result_CC.result == "fail") {
-        console.log(`GET /bicycle/all end --fail, ${result_CC}`);
-    } else {
-        console.log(`GET /bicycle/all end --success, ${result_CC}`);
-    }
-    res.status(200).send(result_CC);
-});
+// Setting Routers
+app.use('/', indexRouter);
+app.use('/bicycles', bicycleRouter);
+app.use('/users', userRouter);
 
 
 // Create adminWallet
@@ -267,15 +150,7 @@ app.post('/userWallet', async (req, res) => {
     }
 });
 
-
-app.get('/', (req, res) => {
-    console.log("index page called");
-    res.render('index', (err, html) => {
-        res.end(html);
-    });
-});
-
-// Running server on port 6000
-app.listen(6000, () => {
-    console.log('Express server is running at port 6000');
+// Running server on specified port 
+app.listen(port, () => {
+    console.log(`Express server is running at port ${port}`);
 });
