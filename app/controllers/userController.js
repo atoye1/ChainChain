@@ -129,5 +129,16 @@ exports.users_login_post = (req, res, next) => {
     return;
 };
 exports.users_logout_post = (req, res, next) => {
-    return;
+    const loginResult = {
+        loggedIn: false,
+    };
+    if (req.session.user) {
+        console.log("logging out");
+        req.session.user = null;
+        console.log("session destroy succeed");
+        res.status(200).json(loginResult);
+    } else {
+        console.log("not logged in");
+        res.status(200).json(loginResult);
+    }
 };

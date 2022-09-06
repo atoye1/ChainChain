@@ -27,7 +27,6 @@ async function checkLogin() {
     console.log("checkLogin() ended");
     // TODO:localStorage cookie or session 활용해서 받아오는 형식으로 변경한다.
 }
-checkLogin();
 
 // Dynamically loads modelName according to company-name
 $("#companyName").change(() => {
@@ -126,6 +125,7 @@ $("#loginBtn").click(async () => {
     await $.post('/users/login', postData, (data, status) => {
         console.log(status);
         console.log(data);
+        // need to return json value from controller function
         displayData(data, "login");
     });
     console.log("login btn triggered");
@@ -153,11 +153,11 @@ $("#reportBtn").click(async () => {
     $("#changeModal").modal('toggle');
 });
 
-$("#logoutMenu").click(() => {
-    if ($("#navbarCollapse").hasClass('show')) {
-        $('.navbar-toggler').click();
-    }
-    loggedIn = false;
+$("#logoutMenu").click(async () => {
+    await $.post('/users/logout', {}, (data, status) => {
+        console.log(data, status);
+    });
+    navbarHider();
     checkLogin();
 });
 
@@ -200,3 +200,7 @@ $("#changeLoginStatus").click(() => {
     loggedIn = loggedIn ? false : true;
     checkLogin();
 });
+
+
+
+checkLogin();
