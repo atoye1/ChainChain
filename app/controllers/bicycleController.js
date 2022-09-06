@@ -20,11 +20,13 @@ exports.bicycles_get = async (req, res, next) => {
 
 exports.bicycles_post = async (req, res, next) => {
     console.log("POST /bicycles triggered");
-    const key = req.body.Key;
+    console.log("file", req.file);
+    console.log("req", req);
+    console.log("req.key", req.Key);
+    const key = req;
     const value = JSON.stringify(req.body);
-    console.log(req.body);
-    console.log(value);
-    console.log(req.files);
+    // console.log("req files object", req.files.file.name);
+    // upload.single(req.files.file);
     return;
     let result_CC = await triggerCC(currentId, "Set", key, value);
     let successFlag = result_CC.result == "fail" ? "fail" : "success";

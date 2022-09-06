@@ -40,40 +40,64 @@ $("#registerBtn").click(async () => {
     const Company = $("#companyName").val();
     const Model = $("#modelName").val();
     const Colour = $("#colour").val();
-    const ImageFile = await document.getElementById("bicycleImg").files[0];
+    const ImageFile = await document.getElementById("file").files[0];
     const Comment = $("#comment").val();
     const Location = $("#location").val();
     const Abandoned = "false";
     const Surrendered = "false";
-    let ImageFileBinary;
+    let file = document.getElementById("file").files[0];
     if (ImageFile) {
         let reader = new FileReader();
         reader.readAsArrayBuffer(ImageFile);
         reader.onload = (event) => {
             console.log("event", event);
-            ImageFileBinary = event.target.result;
-            console.log("result", ImageFileBinary);
+            file = event.target.result;
+            console.log("result", file);
         };
     }
-
-    await $.post('/bicycles', {
-        Key: Key,
-        Owner: Owner,
-        Company: Company,
-        Model: Model,
-        Colour: Colour,
-        ImageTitle: ImageFile.name,
-        ImageFileBinary: ImageFileBinary,
-        Comment: Comment,
-        Location: Location,
-        Abandoned: Abandoned,
-        Surrendered: Abandoned,
-    }, (data, status) => {
-        console.log("post to /bicycles successful");
-        console.log(status);
-        console.log(data);
-        displayData(data, "Set");
+    data = new FormData();
+    data.append('file', file);
+    data.append('Key', Key);
+    console.log(data);
+    await $.ajax({
+        type: 'POST',
+        enctype: 'mutipart/form-data',
+        url: '/bicycles',
+        data: data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 60000,
+        success: (data, status) => {
+            console.log("post to /bicycles successful");
+            console.log(status);
+            console.log(data);
+            displayData(data, "Set");
+        },
+        error: (e) => {
+            console.log("Error: ", e);
+            alert("failed");
+        }
     });
+
+    // await $.post('/bicycles', {
+    //     Key: Key,
+    //     Owner: Owner,
+    //     Company: Company,
+    //     Model: Model,
+    //     Colour: Colour,
+    //     ImageTitle: ImageFile.name,
+    //     ImageFileBinary: ImageFileBinary,
+    //     Comment: Comment,
+    //     Location: Location,
+    //     Abandoned: Abandoned,
+    //     Surrendered: Abandoned,
+    // }, (data, status) => {
+    //     console.log("post to /bicycles successful");
+    //     console.log(status);
+    //     console.log(data);
+    //     displayData(data, "Set");
+    // });
 
     navbarHider();
     $("#registerModal").modal('toggle');
