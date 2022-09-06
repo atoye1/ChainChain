@@ -1,5 +1,3 @@
-let loggedIn = false;
-
 // define simple util functions
 function navbarHider() {
     if ($("#navbarCollapse").hasClass('show')) {
@@ -7,7 +5,16 @@ function navbarHider() {
     }
 }
 
-function checkLogin() {
+async function checkLogin() {
+    let loggedIn = false;
+    console.log("checkLogin() called");
+    await $.get('/users/login', {}, (data, status) => {
+        console.log("printing data below");
+        console.log(data, status);
+        // data = JSON.parse(data);
+        loggedIn = data.loggedIn;
+    });
+
     if (loggedIn) {
         $("#loginMenu").addClass("d-none");
         $("#signupMenu").addClass("d-none");
@@ -17,6 +24,7 @@ function checkLogin() {
         $("#signupMenu").removeClass("d-none");
         $("#logoutMenu").addClass("d-none");
     }
+    console.log("checkLogin() ended");
     // TODO:localStorage cookie or session 활용해서 받아오는 형식으로 변경한다.
 }
 checkLogin();
@@ -107,9 +115,6 @@ $("#registerBtn").click(async () => {
 
 
 $("#loginBtn").click(async () => {
-    if ($("#navbarCollapse").hasClass('show')) {
-        $('.navbar-toggler').click();
-    }
     $('.navbar-toggler').click();
     const loginId = $("#loginId").val();
     const loginPw = $("#loginPw").val();
@@ -117,13 +122,15 @@ $("#loginBtn").click(async () => {
         loginId: loginId,
         loginPw: loginPw
     };
-    await $.post(apiStubAddr, postData, (data, status) => {
+    console.log(postData);
+    await $.post('/users/login', postData, (data, status) => {
         console.log(status);
         console.log(data);
         displayData(data, "login");
     });
     console.log("login btn triggered");
     checkLogin();
+    navbarHider();
     $("#loginModal").modal('toggle');
 });
 

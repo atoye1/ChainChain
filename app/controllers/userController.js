@@ -9,7 +9,7 @@ const ccp = buildCCPOrg1();
 const caClient = buildCAClient(FabricCaServices, ccp, 'ca.org1.example.com');
 
 exports.users_get = (req, res, next) => {
-    return;
+    res.send("user_get not implemented");
 };
 
 exports.users_create_post = async (req, res, next) => {
@@ -95,5 +95,39 @@ exports.users_create_post = async (req, res, next) => {
     return;
 };
 exports.user_get = (req, res, next) => {
+    return;
+};
+
+exports.user_delete = (req, res, next) => {
+    return;
+};
+exports.users_login_get = (req, res, next) => {
+    console.log("Get /users/login called");
+    const loginResult = {
+        loggedIn: false,
+    };
+    if (req.session.user) {
+        loginResult.loggedIn = true;
+    }
+    console.log(loginResult);
+    res.status(200).json(loginResult);
+};
+exports.users_login_post = (req, res, next) => {
+    console.log(req.body);
+    const loginId = req.body.loginId;
+    const loginPw = req.body.loginPw;
+
+    if (req.session.user) {
+        console.log("already logged in");
+        res.redirect('/');
+    }
+    req.session.user = {
+        id: loginId,
+        authorized: true
+    };
+    res.status(200).send("<h1>login success</h1>");
+    return;
+};
+exports.users_logout_post = (req, res, next) => {
     return;
 };

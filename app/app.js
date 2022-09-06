@@ -4,6 +4,7 @@
 const express = require('express');
 const path = require('path');
 const serveIndex = require('serve-index');
+const expressSession = require('express-session');
 // const fileUpload = require('express-fileupload');
 
 // Import routers
@@ -25,7 +26,12 @@ app.set('view engine', 'ejs');
 // express settings
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-// app.use(fileUpload());
+app.use(expressSession({
+  secret: 'myKey',
+  resave: true,
+  saveUninitialized: true
+}
+));
 app.use('/static', express.static(path.join(__dirname, '/')));
 app.use(express.static(__dirname + "/"));
 app.use('/static', serveIndex(__dirname + '/'));
